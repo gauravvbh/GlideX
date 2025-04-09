@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import "../global.css"
+import 'react-native-get-random-values';
 import MainLayout from '@/components/MainLayout';
 
 

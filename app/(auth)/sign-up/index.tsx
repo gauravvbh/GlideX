@@ -7,14 +7,15 @@ import { Link, router } from 'expo-router'
 import OAuth from '@/components/OAuth'
 import { useSignUp } from '@clerk/clerk-expo'
 import { ReactNativeModal } from "react-native-modal";
-import api from '@/utils/api'
+import api from '@/lib/api'
 
 
 const SignUp = () => {
     const { isLoaded, signUp, setActive } = useSignUp()
 
     const [form, setForm] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
         password: ''
     })
@@ -31,6 +32,8 @@ const SignUp = () => {
 
         try {
             await signUp.create({
+                firstName: form.firstName,
+                lastName: form.lastName,
                 emailAddress: form.email,
                 password: form.password,
             })
@@ -60,9 +63,10 @@ const SignUp = () => {
 
 
             if (signUpAttempt.status === 'complete') {
+                const fullName = `${form.firstName} ${form.lastName}`
                 try {
                     const result = await api.post(`/(api)/user`, {
-                        name: form.name,
+                        name: fullName,
                         email: form.email,
                         clerk_id: signUpAttempt.createdUserId
                     })
@@ -110,21 +114,34 @@ const SignUp = () => {
             </View>
             <View className='p-5 '>
                 <InputField
-                    label="Name"
-                    placeholder="Enter Your name"
+                    label="First Name"
+                    placeholder="Enter your first name"
                     icon={icons.person}
-                    value={form.name}
+                    value={form.firstName}
                     onChangeText={(value) => {
                         setForm({
                             ...form,
-                            name: value
-
+                            firstName: value
                         })
                     }}
                 />
                 <InputField
+                    label="Last Name"
+                    placeholder="Enter your last name"
+                    icon={icons.person}
+                    value={form.lastName}
+                    onChangeText={(value) => {
+                        setForm({
+                            ...form,
+                            lastName: value
+                        })
+                    }}
+                />
+
+
+                <InputField
                     label="Email"
-                    placeholder="Enter Your email"
+                    placeholder="Enter your email"
                     icon={icons.email}
                     value={form.email}
                     onChangeText={(value) => {
@@ -137,7 +154,7 @@ const SignUp = () => {
                 />
                 <InputField
                     label="Password"
-                    placeholder="Enter Your password"
+                    placeholder="Enter your password"
                     icon={icons.lock}
                     value={form.password}
                     secureTextEntry={true}
