@@ -1,0 +1,32 @@
+{
+  "cli": {
+    "version": ">= 16.3.1",
+    "appVersionSource": "remote",
+    "requireCommit": true
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_API_KEY_DEV": "$EXPO_PUBLIC_GOOGLE_API_KEY_DEV"
+      }
+    },
+    "production": {
+      "releaseChannel": "production",
+      "autoIncrement": true,
+      "developmentClient": false,
+      "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_API_KEY": "$EXPO_PUBLIC_GOOGLE_API_KEY",
+        "EXPO_PUBLIC_STRIPE_API_KEY": "$EXPO_PUBLIC_STRIPE_API_KEY"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
