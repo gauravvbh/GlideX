@@ -1,25 +1,16 @@
-import 'dotenv/config';
+import dotenv from "dotenv";
 
-// const isProduction = process.env.EAS_BUILD_PROFILE === 'production';
+dotenv.config({ path: './.env.local' });
 
-// const MAPS_KEY = isProduction
-//   ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-//   : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
+const isProduction = process.env.EAS_BUILD_PROFILE === 'production';
 
-// const STRIPE_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY;
-
-
-const MAPS_KEY =
-  process.env.EXPO_PUBLIC_GOOGLE_API_KEY || process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
+const MAPS_KEY = isProduction
+  ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
+  : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
 
 const STRIPE_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY;
 
-if (!MAPS_KEY) {
-  throw new Error('❌ MAPS_KEY is undefined. Check your env variables.');
-}
-if (!STRIPE_KEY) {
-  throw new Error('❌ STRIPE_KEY is undefined. Check your env variables.');
-}
+
 
 
 export default {
