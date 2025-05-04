@@ -110,7 +110,11 @@ const ReachCustomer = () => {
                                     })
                                 );
                             }
-
+                            setDriverLocation({
+                                latitude: location.coords.latitude,
+                                longitude: location.coords.longitude,
+                                address: address[0]?.formattedAddress!,
+                            })
                             // Update the last known location
                             setLastLocation(location);
                         }

@@ -1,9 +1,7 @@
 // firebase.js
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytesResumable, uploadBytes, getDownloadURL } from 'firebase/storage';
-import dotenv from 'dotenv';
 
-dotenv.config({ path: '../.env.local' });
 
 
 const firebaseConfig = {

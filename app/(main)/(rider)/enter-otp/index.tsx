@@ -58,8 +58,11 @@ const EnterOtp = () => {
     const handleVerify = () => {
         if (customerOTP && riderOTP && (customerOTP === riderOTP) && activeRideId) {
             const rideDetails = giveRideDetails(activeRideId)
+            console.log('ride details from enter otp page')
+            console.log(activeRideId)
+            console.log(rideDetails)
             if (rideDetails) {
-                removeRideOffer(rideDetails.id)
+                
                 changeStatus(rideDetails?.id, 'Start')
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({

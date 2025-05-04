@@ -128,6 +128,9 @@ const Map = () => {
   const [driverDropoffLatitude, setDriverDropoffLatitude] = useState<number>();
   const [driverDropoffLongitude, setDriverDropoffLongitude] = useState<number>()
   const [rideStatus, setRideStatus] = useState<string>('offer')
+  console.log('rideStatus')
+  console.log(rideStatus)
+  console.log(rideStatus)
   // const [markers, setMarkers] = useState<(PlainDriver)[]>([]);
   const mapRef = useRef<any>(null);
   const lastLocationRef = useRef<{ lat: number, lng: number } | null>(null);
@@ -165,11 +168,17 @@ const Map = () => {
   useEffect(() => {
     const find_destination = () => {
       const details = giveRideDetails(activeRideId!)
-      setDriverPickupLatitude(details?.pickupDetails.pickupLatitude);
-      setDriverPickupLongitude(details?.pickupDetails.pickupLongitude);
-      setDriverDropoffLatitude(details?.dropoffDetails.dropoffLatitude)
-      setDriverDropoffLongitude(details?.dropoffDetails.dropoffLongitude)
-      setRideStatus(details?.status as string)
+
+      if (details) {
+        console.log('done')
+        setDriverPickupLatitude(details.pickupDetails.pickupLatitude);
+        setDriverPickupLongitude(details.pickupDetails.pickupLongitude);
+        setDriverDropoffLatitude(details.dropoffDetails.dropoffLatitude);
+        setDriverDropoffLongitude(details.dropoffDetails.dropoffLongitude);
+        setRideStatus(details.status);
+      } else {
+        console.warn('❗ No ride details found for activeRideId:', activeRideId);
+      }
     }
 
     if (activeRideId) {
@@ -179,7 +188,6 @@ const Map = () => {
 
   const longitude = userLongitude ?? driverLongitude;
   const latitude = userLatitude ?? driverLatitude;
-
   const driverOriginLatitude = rideStatus === 'offer' ? driverLatitude : driverPickupLatitude;
   const driverOriginLongitude = rideStatus === 'offer' ? driverLongitude : driverPickupLongitude;
   const driverDestinationLatitude = rideStatus === 'offer' ? driverPickupLatitude : driverDropoffLatitude;
@@ -676,7 +684,6 @@ const Map = () => {
                   strokeWidth={5}
                 />
               )}
-
 
               {destinationLatitude && destinationLongitude && selectedDriverDetails && rideStatus === 'Start' && (
                 <MapViewDirections

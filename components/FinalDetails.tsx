@@ -3,8 +3,9 @@ import { useCustomer, useDriverStore } from '@/store'
 import { icons } from '@/constants/data'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useUser } from '@clerk/clerk-expo';
+import Payment from './Payment';
 
-const FinalDetails = ({ paid }: { paid: boolean }) => {
+const FinalDetails = ({ paid, setPaid, page }: { paid: boolean; setPaid: (value: boolean) => void, page: string }) => {
     const {
         userAddress,
         destinationAddress
@@ -48,23 +49,28 @@ const FinalDetails = ({ paid }: { paid: boolean }) => {
                     </View>
                     <Text className='my-auto text-xl font-JakartaBold'>${selectedDriverDetails?.price || '_ _'}</Text>
                 </View>
-                <View className='pl-1'>
-                    {
-                        paid ? (
-                            <Text className='text-green-600 font-JakartaSemiBold text-lg'>Paid</Text>
+                {page !== 'Error' && (
+                    <View>
+                        {paid ? (
+                            <Text className='text-green-600 font-semibold'>✅ Paid</Text>
                         ) : (
-                            <Text className=' text-lg'>Payment via cash</Text>
-                        )
-                    }
-                </View>
+                            <>
+                                <Payment
+                                    fullName={user?.fullName!}
+                                    email={user?.emailAddresses[0].emailAddress!}
+                                    amount={selectedDriverDetails?.price!}
+                                    driverId={selectedDriverDetails?.id!}
+                                    rideTime={selectedDriverDetails?.distanceAway!}
+                                    handlePaymentDone={() => setPaid(true)}
+                                />
+                                <Text className='my-4 text-center text-gray-500'>OR</Text>
+                                <Text className='text-center text-lg'>Pay the driver in cash</Text>
+                            </>
+                        )}
+                    </View>
+                )}
             </View>
-            {/* <PaymentPage
-                fullName={user?.fullName!}
-                email={user?.emailAddresses[0].emailAddress!}
-                amount={selectedDriverDetails?.price!}
-                driverId={selectedDriverDetails?.id!}
-                rideTime={selectedDriverDetails?.time!}
-            /> */}
+
         </View>
     )
 }

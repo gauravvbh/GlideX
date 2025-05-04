@@ -16,42 +16,6 @@ import * as Device from 'expo-device'
 import Constants from 'expo-constants'
 
 
-// const dummyRideOffers = [
-//     {
-//         id: 'ride_ab12cd34',
-//         pickup: 'Indira Nagar Metro',
-//         pickupAddress: 'Indira Nagar Metro Station, Lucknow, UP, India',
-//         dropoff: 'Hazratganj',
-//         dropoffAddress: 'Hazratganj Crossing, Lucknow, UP, India',
-//         pickupDistance: '1.1 Km',
-//         customerDetails: {
-//             full_name: 'John Doe',
-//             email: 'john@example.com',
-//             number: '+91-9876543210'
-//         },
-//         rider_id: 'driver_1234',
-//         customer_id: 'user_5678',
-//         status: 'offer'
-//     },
-//     {
-//         id: 'ride_ef56gh78',
-//         pickup: 'Aliganj Market',
-//         pickupAddress: 'Sector Q, Aliganj Main Market, Lucknow, UP, India',
-//         dropoff: 'Charbagh',
-//         dropoffAddress: 'Charbagh Railway Station, Lucknow, UP, India',
-//         pickupDistance: '0.8 Km',
-//         customerDetails: {
-//             full_name: 'Alice Smith',
-//             email: 'alice@example.com',
-//             number: '+91-9123456780'
-//         },
-//         rider_id: 'driver_2345',
-//         customer_id: 'user_6789',
-//         status: 'offer'
-//     },
-// ];
-
-
 
 const RideHome = () => {
 
@@ -441,7 +405,11 @@ const RideHome = () => {
                                     })
                                 );
                             }
-
+                            setDriverLocation({
+                                latitude: location.coords.latitude,
+                                longitude: location.coords.longitude,
+                                address: address[0]?.formattedAddress!,
+                            })
                             // Update the last known location
                             setLastLocation(location);
                         }

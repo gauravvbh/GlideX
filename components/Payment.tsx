@@ -84,7 +84,7 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
             paymentIntentClientSecret: paymentIntent,
             allowsDelayedPaymentMethods: true,
             defaultBillingDetails: {
-                name: 'Jane Doe',
+                name: 'Gaurav',
             },
             returnURL: Linking.createURL("stripe-redirect")
         });

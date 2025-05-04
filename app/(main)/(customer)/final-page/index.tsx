@@ -124,8 +124,8 @@ const FinalPage = () => {
 
             if (message.type === 'rideBegins') {
                 setPage('Middle');
-                removeRideOffer(message.id);
                 changeStatus(message.id, 'Start');
+                // removeRideOffer(message.id);
             }
 
             if (message.type === 'rideEnded') {
@@ -134,6 +134,8 @@ const FinalPage = () => {
             }
         };
     }, [ws]);
+    console.log(page)
+    console.log(page)
 
     useEffect(() => {
         const saveRideToDB = async () => {
@@ -178,7 +180,7 @@ const FinalPage = () => {
 
     return (
         <StripeProvider
-            publishableKey={publishableKey!}
+            publishableKey={publishableKey}
             merchantIdentifier="merchant.uber.com"
             urlScheme="myapp"
         >
@@ -189,6 +191,41 @@ const FinalPage = () => {
                 {page === 'End' && <End number={selectedDriverDetails?.number!} />}
                 {page === 'Error' && <ErrorFindDriver />}
                 {page === 'Loading' && <LoadingRider />}
+
+                <View className='h-[1px] bg-gray-300 my-4' />
+
+                <FinalDetails paid={paid} setPaid={setPaid} page={page} />
+
+                <ReactNativeModal isVisible={showModal}>
+                    <View className='bg-white p-5 rounded-md'>
+                        <Text className='text-2xl font-bold text-center mb-2'>🎉 Ride Completed!</Text>
+                        <Text className='text-lg text-center'>Please complete your payment</Text>
+
+                        {!paid ? (
+                            <>
+                                <PaymentPage
+                                    fullName={user?.fullName!}
+                                    email={user?.emailAddresses[0].emailAddress!}
+                                    amount={selectedDriverDetails?.price!}
+                                    driverId={selectedDriverDetails?.id!}
+                                    rideTime={selectedDriverDetails?.distanceAway!}
+                                    handlePaymentDone={() => setPaid(true)}
+                                />
+                                <Text className='text-center my-3 text-gray-500'>— OR —</Text>
+                                <Text className='text-center text-lg'>Pay with cash to the driver</Text>
+                            </>
+                        ) : (
+                            <Text className='text-green-600 font-semibold text-center text-lg'>✅ Payment completed</Text>
+                        )}
+
+                        <CustomButton
+                            title='Return to Home'
+                            onPress={handleGoBack}
+                            className='mt-5'
+                        />
+                    </View>
+                </ReactNativeModal>
+
             </RideLayout>
         </StripeProvider>
     );

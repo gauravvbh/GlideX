@@ -18,7 +18,7 @@ const ReachCustomer = () => {
 
     const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
 
-    const { activeRideId, giveRideDetails } = useRideOfferStore();
+    const { activeRideId, giveRideDetails, removeRideOffer } = useRideOfferStore(state=>state);
     const { ws, setWebSocket } = useWSStore();
     const [showModal, setShowModal] = useState<boolean>(false)
     const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
@@ -113,7 +113,11 @@ const ReachCustomer = () => {
                                     })
                                 );
                             }
-
+                            setDriverLocation({
+                                latitude: location.coords.latitude,
+                                longitude: location.coords.longitude,
+                                address: address[0]?.formattedAddress!,
+                            })
                             // Update the last known location
                             setLastLocation(location);
                         }
@@ -149,19 +153,23 @@ const ReachCustomer = () => {
 
 
 
-
+console.log(activeRideId)
+console.log(activeRideId)
     const handleSlideComplete = () => {
         if (activeRideId) {
             const rideDetails = giveRideDetails(activeRideId)
+            console.log('rideDetails')
+            console.log(rideDetails)
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: 'journeyEnds',
                     role: 'rider',
-                    id: rideDetails?.id,
                     customer_id: rideDetails?.customer_id,
+                    id: rideDetails?.id,
                 }))
             }
             setShowModal(true)
+            removeRideOffer(rideDetails?.id!)
         }
     };
 
