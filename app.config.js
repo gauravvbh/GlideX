@@ -112,7 +112,12 @@ export default {
       googleMapsApiKey: MAPS_KEY,
       stripeApiKey: STRIPE_KEY,
       clerkPublishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY,
-      serverUrl: process.env.EXPO_PUBLIC_SERVER_URL
+      serverUrl: process.env.EXPO_PUBLIC_SERVER_URL,
+      FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+      FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+      FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
+      FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
+      FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
     },
     owner: "gauravvbh",
     web: {
