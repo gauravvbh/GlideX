@@ -1,7 +1,6 @@
-import { View, Alert, Image, Text } from 'react-native';
+import { View, Alert, Image, Text, Platform } from 'react-native';
 import { useState, useEffect } from 'react';  // Make sure useEffect is imported from React
 import CustomButton from './CustomButton';
-import { useStripe } from '@stripe/stripe-react-native';
 import { PaymentProps } from '@/types/type';
 import { useAuth } from '@clerk/clerk-expo';
 import ReactNativeModal from 'react-native-modal';
@@ -10,6 +9,11 @@ import { useRouter } from 'expo-router';
 import { useCustomer, useDriverStore } from '@/store';
 import * as Linking from "expo-linking";
 import Constants from 'expo-constants';
+
+let useStripe: any;
+if (Platform.OS !== 'web') {
+    useStripe = require('@stripe/stripe-react-native').useStripe;
+}
 
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
