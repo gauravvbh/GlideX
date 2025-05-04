@@ -167,7 +167,7 @@ type PlainDriver = Omit<Driver, 'setCarImageURL' | 'setCarSeats' | 'setTime' | '
 //     }
 // }));
 
-export const useDriverStore = create<DriverStore>((set,get) => ({
+export const useDriverStore = create<DriverStore>((set, get) => ({
     drivers: [], // from database all drivers
     nearbyDrivers: [],
     selectedDriverId: null,
@@ -253,7 +253,7 @@ export const useDriverStore = create<DriverStore>((set,get) => ({
 
     removeNearbyDriver: (driverId: string) => {
         set(state => ({
-            nearbyDrivers: state.nearbyDrivers.filter(driver => driver.id !== driverId)
+            nearbyDrivers: state.nearbyDrivers?.filter(driver => driver.id !== driverId)
         }));
     },
     clearSelectedDriver: () => {
@@ -275,7 +275,7 @@ export const useRideOfferStore = create<RideOffer>((set, get) => ({
     },
     removeRideOffer: (rideId: string) => {
         set(state => ({
-            rideOffer: state.rideOffer.filter(offer => offer.id !== rideId)
+            rideOffer: state.rideOffer?.filter(offer => offer.id !== rideId) || []
         }))
     },
     giveRideDetails: (rideId: string) => {

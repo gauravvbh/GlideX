@@ -88,7 +88,6 @@ type PlainDriver = Omit<Driver, 'setCarImageURL' | 'setCarSeats' | 'setUserLocat
 const googlePlacesApiKey = Constants.expoConfig?.extra?.googleMapsApiKey ?? "";
 
 
-
 const Map = () => {
   const [region, setRegion] = useState<Region | undefined>(undefined);
 
@@ -117,7 +116,8 @@ const Map = () => {
 
 
   const path = usePathname();
-  console.log(path)
+
+  const isDriverUI = (path === '/find-customer' || path === 'finish-ride') ? true : false;
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<any>(null);
@@ -235,9 +235,9 @@ const Map = () => {
 
 
 
-        const updatedDrivers = useDriverStore.getState().nearbyDrivers.filter(
+        const updatedDrivers = useDriverStore.getState().nearbyDrivers?.filter(
           (driver) => driver.userLatitude && driver.userLongitude
-        );
+        ) || [];
 
         updateMarkersOnMap(updatedDrivers);
       }
@@ -296,29 +296,52 @@ const Map = () => {
   }
 
   useEffect(() => {
-    const startLongitude = userLongitude ?? driverOriginLongitude;
-    const startLatitude = userLatitude ?? driverOriginLatitude;
+    const updateRegion = () => {
+      if (!isDriverUI) {
+        // Customer UI: Focus on user's location (or customer’s current location if set)
+        const startLatitude = userLatitude;
+        const startLongitude = userLongitude;
+        const endLatitude = destinationLatitude;
+        const endLongitude = destinationLongitude;
 
-    const endLongitude = destinationLatitude ?? driverDestinationLatitude;
-    const endLatitude = destinationLongitude ?? driverDestinationLongitude;
-
-    if (startLatitude && startLongitude &&
-      endLatitude && endLongitude) {
-      const region = calculateRegion({
-        userLongitude: startLongitude!,
-        userLatitude: startLatitude!,
-        destinationLatitude: endLatitude,
-        destinationLongitude: endLongitude,
-      });
-      setRegion(region);
-
-      if (mapRef.current) {
-        mapRef.current.animateToRegion(region, 1000);
+        if (startLatitude && startLongitude) {
+          const region = calculateRegion({
+            userLatitude: startLatitude,
+            userLongitude: startLongitude,
+            destinationLatitude: endLatitude,
+            destinationLongitude: endLongitude,
+          });
+          setRegion(region);
+          if (mapRef.current) {
+            mapRef.current.animateToRegion(region, 1000);
+          }
+        }
       }
-    }
-  }, [
-    userLatitude, userLongitude, destinationLatitude, destinationLongitude, driverDestinationLongitude, driverDestinationLatitude, driverOriginLongitude, driverOriginLatitude, rideStatus
-  ]);
+
+      if (isDriverUI) {
+        // Driver UI: Focus on the driver’s location
+        const startLatitude = driverLatitude;
+        const startLongitude = driverLongitude;
+        const endLatitude = userLatitude; // Customer’s pickup location
+        const endLongitude = userLongitude;
+
+        if (startLatitude && startLongitude) {
+          const region = calculateRegion({
+            userLatitude: startLatitude,
+            userLongitude: startLongitude,
+            destinationLatitude: endLatitude,
+            destinationLongitude: endLongitude,
+          });
+          setRegion(region);
+          if (mapRef.current) {
+            mapRef.current.animateToRegion(region, 1000);
+          }
+        }
+      }
+    };
+
+    updateRegion();
+  }, [userLatitude, userLongitude, destinationLatitude, destinationLongitude, rideStatus, driverLatitude, driverLongitude, userLatitude, userLongitude]);
 
 
 
@@ -432,9 +455,9 @@ const Map = () => {
         // }, 10000)
         // setNearbyDrivers(allDrivers);
 
-        const updatedDrivers = useDriverStore.getState().nearbyDrivers.filter(
+        const updatedDrivers = useDriverStore.getState().nearbyDrivers?.filter(
           (driver) => driver.userLatitude && driver.userLongitude
-        );
+        ) || [];
 
         updateMarkersOnMap(updatedDrivers);
       }
@@ -715,8 +738,7 @@ const Map = () => {
           )
         }
         {markers && markers.length > 0 && !selectedDriverDetails && (
-          markers
-            .filter(marker => marker.userLatitude && marker.userLongitude)
+          markers?.filter(marker => marker.userLatitude && marker.userLongitude)
             .map(marker => (
               <Marker
                 key={`${marker.id}-${rideStatus}`}
@@ -730,7 +752,7 @@ const Map = () => {
                   selectedDriverId === marker.id ? icons.selectedMarker : icons.marker
                 }
               />
-            ))
+            )) || []
         )}
       </MapView>
 

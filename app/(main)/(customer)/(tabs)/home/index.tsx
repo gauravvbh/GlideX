@@ -2,7 +2,7 @@ import { useClerk, useUser } from '@clerk/clerk-expo';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
-import { icons, images, rides } from '@/constants/data';
+import { icons, images } from '@/constants/data';
 import RideCard from '@/components/RideCard';
 import GoogleTextInput from '@/components/GoogleTextInput';
 import { useEffect, useState } from 'react';
@@ -10,20 +10,20 @@ import * as Location from 'expo-location';
 import { useCustomer, useRidesStore, useUserStore, useWSStore } from '@/store';
 import Map from '@/components/Map';
 
-
 const HomePage = () => {
-    const { setUserLocation: setCustomerLocation, setDestinationLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL } = useCustomer();
+    const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL } = useCustomer();
 
     const { setRides, Rides } = useRidesStore();
+    console.log(Rides)
     const { ws, setWebSocket } = useWSStore();
-    
+
     const { user } = useUser();
     const { role } = useUserStore();
     const data = user?.publicMetadata;
     const { signOut } = useClerk();
-    const [hasPermissions, setHasPermissions] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [address, setAddress] = useState('');
+    const [hasPermissions, setHasPermissions] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [address, setAddress] = useState<string>('');
 
 
 
@@ -149,11 +149,6 @@ const HomePage = () => {
         }
     };
 
-    const handleDestinationPress = (location: { latitude: number, longitude: number, address: string }) => {
-        // console.log(location)
-        setDestinationLocation(location);
-        router.push('/(main)/find-ride');
-    };
 
     //getting all rides from api
     useEffect(() => {
@@ -187,7 +182,7 @@ const HomePage = () => {
     return (
         <SafeAreaView className='bg-gray-500 text-white flex-1'>
             <FlatList
-                data={Rides?.slice(0, 3)}
+                data={(Rides || []).slice(0, 3)}
                 renderItem={({ item }) => <RideCard ride={item} />}
                 className='px-5'
                 keyboardShouldPersistTaps='handled'
@@ -216,7 +211,17 @@ const HomePage = () => {
                                 <Image source={icons.out} className='w-4 h-4' />
                             </TouchableOpacity>
                         </View>
-                        <GoogleTextInput containerStyle='bg-white shadow-md shadow-neutral-300' handlePress={handleDestinationPress} />
+
+                        <View className="">
+                            <TouchableOpacity
+                                onPress={() => router.push('/autocomplete')}
+                                className="bg-white rounded-full px-4 py-3 mb-4 flex-row items-center gap-x-3"
+                            >
+                                <Image source={icons.search} className="w-6 h-6 tint-white" />
+                                <Text className="text-black text-base">Search destination...</Text>
+                            </TouchableOpacity>
+                        </View>
+
                         <Text className='text-xl font-JakartaBold mt-5'>Your Current Location:</Text>
                         {address && (
                             <Text className='text-lg font-Jakarta text-gray-700 mb-3'>{address}</Text>

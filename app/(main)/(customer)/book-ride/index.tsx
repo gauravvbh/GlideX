@@ -23,7 +23,7 @@ const BookRidePage = () => {
 
 
     useEffect(() => {
-        const driversWithLocation = nearbyDrivers.filter(driver => driver.userAddress);
+        const driversWithLocation = nearbyDrivers?.filter(driver => driver.userAddress) || [];
         setDriversWLocations(driversWithLocation);
     }, [nearbyDrivers])
 

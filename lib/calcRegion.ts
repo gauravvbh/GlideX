@@ -89,9 +89,9 @@ export const getNearbyDrivers = async (
 ): Promise<PlainDriver[]> => {
     console.log('drivers passed on getNearbyDrivers')
     console.log(drivers)
-    const validDrivers = drivers.filter(
+    const validDrivers = drivers?.filter(
         (driver) => driver.userLatitude && driver.userLongitude
-    );
+    ) || [];
     console.log('validDrivers', validDrivers)
     if (validDrivers.length === 0) return [];
 

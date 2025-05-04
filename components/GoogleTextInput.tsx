@@ -1,115 +1,146 @@
-import { View, Image, TouchableOpacity } from 'react-native'
-import { useRef } from 'react'
-import { GoogleInputProps } from '@/types/type'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import React, { useRef, useState, useEffect } from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    FlatList,
+    TouchableOpacity,
+    Image,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+} from 'react-native';
+import { GoogleInputProps } from '@/types/type';
 import { icons } from '@/constants/data';
-import { useCustomer, useUserStore } from '@/store';
+import { useCustomer } from '@/store';
 
-const googlePlacesApiKey = process.env.NODE_ENV === 'production'
-    ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-    : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
-
-
+const googlePlacesApiKey =
+    process.env.NODE_ENV === 'production'
+        ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
+        : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
 
 const GoogleTextInput = ({
     icon,
     containerStyle,
     handlePress,
     initialLocation,
-    textInputBackgroundColor
+    textInputBackgroundColor,
 }: GoogleInputProps) => {
-    // const {
+    const inputRef = useRef<TextInput>(null);
+    const [query, setQuery] = useState('');
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
-    // }=
+    const { userLatitude, userLongitude } = useCustomer();
 
-    const googleRef = useRef<any>(null);
+    useEffect(() => {
+        if (query.length < 3) {
+            setSuggestions([]);
+            return;
+        }
 
-    const {
-        userLatitude,
-        userLongitude
-    } = useCustomer();
+        const fetchSuggestions = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch(
+                    `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
+                        query
+                    )}&key=${googlePlacesApiKey}&location=${userLatitude},${userLongitude}&radius=10000&language=en&components=country:in`
+                );
+                const data = await response.json();
+                setSuggestions(data.predictions || []);
+                setShowSuggestions(true);
+            } catch (err) {
+                console.error('Autocomplete fetch error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSuggestions();
+    }, [query]);
+
+    const handleSelect = async (place_id: string, description: string) => {
+        try {
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&key=${googlePlacesApiKey}`
+            );
+            const data = await response.json();
+            const location = data.result.geometry.location;
+
+            handlePress({
+                latitude: location.lat,
+                longitude: location.lng,
+                address: description,
+            });
+
+            // Truncate the address to display only a portion in the input field
+            setQuery(description.length > 40 ? description.slice(0, 40) + '...' : description);
+            setSuggestions([]);
+            setShowSuggestions(false); // 🔑 Hide list immediately after selecting
+        } catch (err) {
+            console.error('Place details fetch error:', err);
+        }
+    };
+
     return (
-        <View className={`flex flex-row items-center justify-center relative z-50 rounded-xl mb-5 ${containerStyle}`}>
-            <GooglePlacesAutocomplete
-                ref={googleRef}
-                fetchDetails={true}
-                placeholder='Where to?'
-                debounce={200}
-                styles={{
-                    textInputContainer: {
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 20,
-                        marginHorizontal: 20,
-                        position: 'relative',
-                        shadowColor: '#d4d4d4',
-
-                    },
-                    textInput: {
-                        backgroundColor: textInputBackgroundColor || 'white',
-                        fontSize: 16,
-                        fontWeight: '600',
-                        marginTop: 5,
-                        width: '100%',
-                        borderRadius: 200
-                    },
-                    listView: {
-                        backgroundColor: textInputBackgroundColor || 'white',
-                        position: 'relative',
-                        top: 0,
-                        width: '100%',
-                        borderRadius: 10,
-                        shadowColor: '#d4d4d4',
-                        zIndex: 99
-                    }
-                }}
-                onFail={(error) => {
-                    console.log(error)
-                }}
-                onPress={(data, details = null) => {
-                    if (!details) return;
-                    handlePress({
-                        latitude: details?.geometry.location.lat,
-                        longitude: details?.geometry.location.lng,
-                        address: data.description
-                    })
-                }}
-                query={{
-                    key: googlePlacesApiKey,
-                    language: 'en',
-                    components: 'country:in',
-                    location: `${userLatitude},${userLongitude}`,
-                    radius: 10000
-                }}
-                renderLeftButton={() => (
-                    <View className='justify-center items-center w-6 h-6'>
-                        <Image
-                            source={icon || icons.search}
-                            className='w-6 h-6'
-                            resizeMode='contain'
-                        />
-                    </View>
-                )}
-                renderRightButton={() => (
-                    <TouchableOpacity
-                        onPress={() => googleRef.current?.clear()}
-                        className='justify-center items-center w-6 h-6 rounded-3xl bg-gray-200 p-1'
-                    >
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            className={`z-50 mb-5 ${containerStyle}`}
+        >
+            <View className="flex-row items-center bg-white rounded-full px-4 py-3 shadow shadow-neutral-300">
+                <Image
+                    source={icon || icons.search}
+                    className="w-5 h-5 mr-3 tint-black"
+                    resizeMode="contain"
+                />
+                <TextInput
+                    ref={inputRef}
+                    placeholder={initialLocation || 'Where to?'}
+                    placeholderTextColor="gray"
+                    value={query}
+                    onChangeText={(text) => {
+                        setQuery(text);
+                        setShowSuggestions(true);
+                    }}
+                    className="flex-1 text-black text-base"
+                />
+                {query.length > 0 && (
+                    <TouchableOpacity onPress={() => {
+                        setQuery('');
+                        setSuggestions([]);
+                        setShowSuggestions(false);
+                    }}>
                         <Image
                             source={icons.close}
-                            className='w-full h-full'
-                            resizeMode='contain'
+                            className="w-4 h-4 tint-black"
+                            resizeMode="contain"
                         />
                     </TouchableOpacity>
                 )}
-                textInputProps={{
-                    placeholderTextColor: 'gray',
-                    placeholder: initialLocation ?? "Where to?",
-                    returnKeyType: 'search'
-                }}
-            />
-        </View>
-    )
-}
+            </View>
 
-export default GoogleTextInput
+            {loading && <ActivityIndicator className="mt-3" color="#666" size="small" />}
+
+            {showSuggestions && suggestions.length > 0 && (
+                <FlatList
+                    data={suggestions}
+                    keyExtractor={(item) => item.place_id}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() => handleSelect(item.place_id, item.description)}
+                            className="bg-white px-4 py-3 border-b border-neutral-200"
+                        >
+                            <Text className="text-black">{item.description}</Text>
+                        </TouchableOpacity>
+                    )}
+                    className="mt-2 max-h-60 rounded-xl bg-white"
+                    keyboardShouldPersistTaps="handled"
+                />
+            )}
+        </KeyboardAvoidingView>
+    );
+};
+
+export default GoogleTextInput;
