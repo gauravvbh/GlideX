@@ -4,6 +4,9 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useRidesStore } from '@/store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { icons } from '@/constants/data';
+import Constants from 'expo-constants';
+
+const googleMapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
 
 const ShowRide = () => {
     const { rideId } = useLocalSearchParams();
@@ -87,9 +90,9 @@ const ShowRide = () => {
                         <Text className="text-white text-3xl font-semibold mb-4">Route Map</Text>
                         <Image
                             source={{
-                                // uri: `https://maps.googleapis.com/maps/api/staticmap?center=${origin_latitude},${origin_longitude}&zoom=10&size=250x250&markers=color:red%7Clabel:O%7C${origin_latitude},${origin_longitude}&markers=color:blue%7Clabel:D%7C${destination_latitude},${destination_longitude}&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`
+                                // uri: `https://maps.googleapis.com/maps/api/staticmap?center=${origin_latitude},${origin_longitude}&zoom=10&size=250x250&markers=color:red%7Clabel:O%7C${origin_latitude},${origin_longitude}&markers=color:blue%7Clabel:D%7C${destination_latitude},${destination_longitude}&key=${googleMapsApiKey}`
 
-                                uri:`https:maps.googleapis.com/maps/api/staticmap?center=${destination_latitude},${destination_longitude}&zoom=12&size=250x250&maptype=roadmap&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`
+                                uri: `https:maps.googleapis.com/maps/api/staticmap?center=${destination_latitude},${destination_longitude}&zoom=12&size=250x250&maptype=roadmap&key=${googleMapsApiKey}`
                             }}
                             className="w-full h-56 rounded-xl shadow-xl"
                         />

@@ -7,6 +7,10 @@ import { Link, router } from 'expo-router'
 import OAuth from '@/components/OAuth'
 import { useAuth, useSignIn, useUser } from '@clerk/clerk-expo'
 import { useUserStore } from '@/store'
+import Constants from 'expo-constants';
+
+
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
 const SignIn = () => {
     const { signIn, setActive, isLoaded } = useSignIn();
@@ -31,7 +35,7 @@ const SignIn = () => {
             if (signInAttempt.status === 'complete' && signInAttempt.createdSessionId) {
                 await setActive({ session: signInAttempt.createdSessionId })
 
-                const result = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/sign-in`, {
+                const result = await fetch(`${API_URL}/(api)/sign-in`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -43,7 +47,7 @@ const SignIn = () => {
                 });
                 const { data } = await result.json()
 
-                await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/clerk-role`, {
+                await fetch(`${API_URL}/(api)/clerk-role`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

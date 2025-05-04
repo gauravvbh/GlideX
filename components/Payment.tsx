@@ -9,6 +9,10 @@ import { images } from '@/constants/data';
 import { useRouter } from 'expo-router';
 import { useCustomer, useDriverStore } from '@/store';
 import * as Linking from "expo-linking";
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
+
 
 export default function Payment({ fullName, email, amount, driverId, rideTime, handlePaymentDone }: PaymentProps) {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -35,7 +39,7 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
 
     const fetchPaymentSheetParams = async () => {
         try {
-            const response = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/create-payment`, {
+            const response = await fetch(`${API_URL}/(api)/create-payment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

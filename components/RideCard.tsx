@@ -4,6 +4,10 @@ import { RideData } from '@/types/type'
 import { icons } from '@/constants/data'
 import { useRouter } from 'expo-router'
 import { formatDate, formatTime } from '@/lib/utils'
+import Constants from 'expo-constants';
+
+const googleMapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
+
 
 const RideCard = ({ ride }: { ride: RideData }) => {
 
@@ -28,7 +32,7 @@ const RideCard = ({ ride }: { ride: RideData }) => {
           <View className='flex flex-row items-center justify-between bg-red-50'>
             <Image
               source={{
-                uri: `https://maps.googleapis.com/maps/api/staticmap?center=${destination_latitude},${destination_longitude}&zoom=15&size=200x200&maptype=roadmap&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`
+                uri: `https://maps.googleapis.com/maps/api/staticmap?center=${destination_latitude},${destination_longitude}&zoom=15&size=200x200&maptype=roadmap&key=${googleMapsApiKey}`
               }}
               className='w-[80px] h-[90px] rounded-lg'
 

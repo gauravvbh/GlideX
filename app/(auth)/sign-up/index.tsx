@@ -8,6 +8,9 @@ import OAuth from '@/components/OAuth'
 import { useSignUp } from '@clerk/clerk-expo'
 import ReactNativeModal from 'react-native-modal'
 import { useUserStore } from '@/store'
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
 const SignUp = () => {
     const { role } = useUserStore();
@@ -70,7 +73,7 @@ const SignUp = () => {
             if (isEmailVerified) {
                 await setActive!({ session: signUpAttempt.createdSessionId })
                 const fullName = `${form.firstName} ${form.lastName}`
-                const result = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/user`, {
+                const result = await fetch(`${API_URL}/(api)/user`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

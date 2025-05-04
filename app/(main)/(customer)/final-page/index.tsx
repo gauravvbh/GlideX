@@ -15,6 +15,10 @@ import ErrorFindDriver from '@/components/ErrorFindDriver';
 import { useRouter } from 'expo-router';
 import OnWay from '@/components/OnWay';
 import ReactNativeModal from 'react-native-modal';
+import Constants from 'expo-constants';
+
+const publishableKey = Constants.expoConfig?.extra?.stripeApiKey;
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
 // Only import StripeProvider in non-web environments to avoid bundling issues
 let StripeProvider: any = ({ children }: any) => <>{children}</>;
@@ -28,7 +32,6 @@ if (Platform.OS !== 'web') {
     }
 }
 
-const publishableKey = process.env.EXPO_PUBLIC_STRIPE_API_KEY;
 
 const FinalPage = () => {
     if (Platform.OS === 'web') {
@@ -137,7 +140,7 @@ const FinalPage = () => {
             if (activeRideId && page === 'End') {
                 const rideDetails = giveRideDetails(activeRideId);
                 try {
-                    const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/ride/create`;
+                    const url = `${API_URL}/(api)/ride/create`;
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

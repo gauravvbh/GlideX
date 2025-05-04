@@ -9,6 +9,9 @@ import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
 import { useCustomer, useRidesStore, useUserStore, useWSStore } from '@/store';
 import Map from '@/components/Map';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
 const HomePage = () => {
   const {
@@ -123,7 +126,7 @@ const HomePage = () => {
     const getAllRides = async () => {
       setLoading(true);
       try {
-        const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/ride/get-all?clerk_id=${user.id}`;
+        const url = `${API_URL}/(api)/ride/get-all?clerk_id=${user.id}`;
 
         const response = await fetch(url, {
           method: 'GET',

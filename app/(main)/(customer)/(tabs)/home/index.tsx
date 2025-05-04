@@ -9,6 +9,9 @@ import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
 import { useCustomer, useRidesStore, useUserStore, useWSStore } from '@/store';
 import Map from '@/components/Map';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
 const HomePage = () => {
     const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL } = useCustomer();
@@ -56,32 +59,6 @@ const HomePage = () => {
         }
     }, [user]);
 
-
-    // useEffect(() => {
-    //     const addRole = async () => {
-    //         try {
-    //             const result = await fetch(`${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/clerk-role`, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json'
-    //                 },
-    //                 body: JSON.stringify({
-    //                     clerk_id: user?.id,
-    //                     role: 'customer',
-    //                     email: user?.primaryEmailAddress?.emailAddress
-    //                 })
-    //             });
-    //             const data = await result.json();
-
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }
-
-    //     if (user) {
-    //         addRole();
-    //     }
-    // }, [user])
 
 
 
@@ -157,7 +134,7 @@ const HomePage = () => {
         const getAllRides = async () => {
             setLoading(true)
             try {
-                const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/ride/get-all?clerk_id=${user.id}`;
+                const url = `${API_URL}/(api)/ride/get-all?clerk_id=${user.id}`;
 
 
                 const response = await fetch(url, {

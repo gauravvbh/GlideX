@@ -86,6 +86,7 @@ type PlainDriver = Omit<Driver, 'setCarImageURL' | 'setCarSeats' | 'setUserLocat
 
 // Google Maps API Key setup
 const googlePlacesApiKey = Constants.expoConfig?.extra?.googleMapsApiKey ?? "";
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
 
 const Map = () => {
@@ -406,7 +407,7 @@ const Map = () => {
         // Fetch only once
         if (!drivers || drivers.length === 0) {
           try {
-            const url = `${process.env.EXPO_PUBLIC_SERVER_URL}/(api)/driver/get-all`;
+            const url = `${API_URL}/(api)/driver/get-all`;
 
             const response = await fetch(url, {
               method: 'GET',

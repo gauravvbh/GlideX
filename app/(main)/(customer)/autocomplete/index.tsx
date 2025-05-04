@@ -14,11 +14,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { icons } from '@/constants/data'; // Your icon paths
 import { useCustomer } from '@/store';
 import { router } from 'expo-router';
+import Constants from 'expo-constants';
 
-const googlePlacesApiKey =
-    process.env.NODE_ENV === 'production'
-        ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-        : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
+const googlePlacesApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
+
+// const googlePlacesApiKey =
+//     process.env.NODE_ENV === 'production'
+//         ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
+//         : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
 
 type Suggestion = {
     description: string;

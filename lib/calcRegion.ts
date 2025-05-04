@@ -1,10 +1,15 @@
 import { Driver } from "@/types/type";
 
-const isProduction = process.env.EAS_BUILD_PROFILE === 'production';
+// const isProduction = process.env.EAS_BUILD_PROFILE === 'production';
 
-const MAPS_KEY = isProduction
-    ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-    : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
+// const MAPS_KEY = isProduction
+//     ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
+//     : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
+
+import Constants from 'expo-constants';
+
+const googleMapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
+
 
 type PlainDriver = Omit<Driver, 'setCarImageURL' | 'setCarSeats' | 'setUserLocation' | 'setId' | 'setProfileImageURL' | 'setRating' | 'setFullName' | 'setRole'>;
 
@@ -100,7 +105,7 @@ export const getNearbyDrivers = async (
         .join("|");
 
     const origin = `${userLatitude},${userLongitude}`;
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destinations}&key=${MAPS_KEY}&units=metric`;
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destinations}&key=${googleMapsApiKey}&units=metric`;
 
     try {
         const res = await fetch(url);
@@ -126,13 +131,13 @@ export const getNearbyDrivers = async (
                 let price = '';
                 if (destinationLatitude && destinationLongitude) {
                     const responseToUser = await fetch(
-                        `https://maps.googleapis.com/maps/api/directions/json?origin=${driver.userLatitude},${driver.userLongitude}&destination=${userLatitude},${userLongitude}&key=${MAPS_KEY}`
+                        `https://maps.googleapis.com/maps/api/directions/json?origin=${driver.userLatitude},${driver.userLongitude}&destination=${userLatitude},${userLongitude}&key=${googleMapsApiKey}`
                     );
                     const dataToUser = await responseToUser.json();
                     const timeToUser = dataToUser.routes[0].legs[0].duration.value; // in seconds
 
                     const responseToDest = await fetch(
-                        `https://maps.googleapis.com/maps/api/directions/json?origin=${userLatitude},${userLongitude}&destination=${destinationLatitude},${destinationLongitude}&key=${MAPS_KEY}`
+                        `https://maps.googleapis.com/maps/api/directions/json?origin=${userLatitude},${userLongitude}&destination=${destinationLatitude},${destinationLongitude}&key=${googleMapsApiKey}`
                     );
                     const dataToDest = await responseToDest.json();
                     const timeToDest = dataToDest.routes[0].legs[0].duration.value; // in seconds

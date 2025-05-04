@@ -13,11 +13,15 @@ import {
 import { GoogleInputProps } from '@/types/type';
 import { icons } from '@/constants/data';
 import { useCustomer } from '@/store';
+import Constants from 'expo-constants';
 
-const googlePlacesApiKey =
-    process.env.NODE_ENV === 'production'
-        ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-        : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
+// const googlePlacesApiKey =
+//     process.env.NODE_ENV === 'production'
+//         ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
+//         : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
+
+
+const googlePlacesApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
 
 const GoogleTextInput = ({
     icon,

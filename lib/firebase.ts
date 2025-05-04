@@ -1,14 +1,17 @@
 // firebase.js
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytesResumable, uploadBytes, getDownloadURL } from 'firebase/storage';
+import dotenv from 'dotenv';
 
-// Your Firebase configuration (found in Firebase console)
+dotenv.config({ path: '../.env.local' });
+
+
 const firebaseConfig = {
-  apiKey: "AIzaSyA1Z36ZIaRTsIELiy8TJ3rMdAPha5-6ubw",
-  projectId: "glidex-83723",
-  storageBucket: "glidex-83723.firebasestorage.app",
-  messagingSenderId: "254559139780",
-  appId: "1:254559139780:android:544d5b79fcb3317a721691"
+  apiKey: process.env.FIREBASE_API_KEY,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);

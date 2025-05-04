@@ -110,7 +110,9 @@ export default {
         projectId: "43ad45d8-f2b4-456e-a48f-cfb48faeb6aa"
       },
       googleMapsApiKey: MAPS_KEY,
-      EXPO_PUBLIC_STRIPE_API_KEY: STRIPE_KEY
+      stripeApiKey: STRIPE_KEY,
+      clerkPublishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY,
+      serverUrl: process.env.EXPO_PUBLIC_SERVER_URL
     },
     owner: "gauravvbh",
     web: {
