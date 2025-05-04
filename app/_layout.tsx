@@ -8,6 +8,9 @@ import 'react-native-get-random-values';
 import MainLayout from '@/components/MainLayout';
 import { ClerkProvider } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache'
+import Constants from 'expo-constants';
+
+const clerkPublishableKey = Constants.expoConfig?.extra?.clerkPublishableKey;
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -27,9 +30,9 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DarkTheme}>
-      <ClerkProvider tokenCache={tokenCache}>
+      <ClerkProvider tokenCache={tokenCache} publishableKey={clerkPublishableKey}>
         <MainLayout isFontsLoaded={isFontsLoaded} />
-        <StatusBar   />
+        <StatusBar />
       </ClerkProvider>
     </ThemeProvider>
   );
