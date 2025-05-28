@@ -11,8 +11,10 @@ const {
   FIREBASE_APP_ID
 } = Constants.expoConfig?.extra || {};
 
-console.log(FIREBASE_MESSAGING_SENDER_ID); // should now be defined
-console.log(FIREBASE_MESSAGING_SENDER_ID); // should now be defined
+
+console.log('consoling from firebase.ts')
+console.log(FIREBASE_MESSAGING_SENDER_ID); 
+console.log(FIREBASE_MESSAGING_SENDER_ID);
 
 
 
@@ -23,6 +25,9 @@ const firebaseConfig = {
   messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
   appId: FIREBASE_APP_ID
 };
+
+console.log("Firebase config:", firebaseConfig);
+
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
