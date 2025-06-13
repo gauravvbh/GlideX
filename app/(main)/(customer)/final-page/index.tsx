@@ -142,7 +142,7 @@ const FinalPage = () => {
             if (activeRideId && page === 'End') {
                 const rideDetails = giveRideDetails(activeRideId);
                 try {
-                    const url = `${API_URL}/(api)/ride/create`;
+                    const url = `${API_URL}/ride/create`;
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -199,10 +199,11 @@ const FinalPage = () => {
                 <ReactNativeModal isVisible={showModal}>
                     <View className='bg-white p-5 rounded-md'>
                         <Text className='text-2xl font-bold text-center mb-2'>🎉 Ride Completed!</Text>
-                        <Text className='text-lg text-center'>Please complete your payment</Text>
+                        
 
                         {!paid ? (
                             <>
+                                <Text className='text-lg text-center'>Please complete your payment</Text>
                                 <PaymentPage
                                     fullName={user?.fullName!}
                                     email={user?.emailAddresses[0].emailAddress!}
@@ -215,7 +216,7 @@ const FinalPage = () => {
                                 <Text className='text-center text-lg'>Pay with cash to the driver</Text>
                             </>
                         ) : (
-                            <Text className='text-green-600 font-semibold text-center text-lg'>✅ Payment completed</Text>
+                            <Text className='text-green-600 font-semibold text-center text-lg mt-5'>✅ Payment completed</Text>
                         )}
 
                         <CustomButton

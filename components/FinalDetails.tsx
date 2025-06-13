@@ -52,7 +52,10 @@ const FinalDetails = ({ paid, setPaid, page }: { paid: boolean; setPaid: (value:
                 {page !== 'Error' && (
                     <View>
                         {paid ? (
-                            <Text className='text-green-600 font-semibold'>✅ Paid</Text>
+                            <View className='bg-green-50 p-4 mt-5 rounded-md'>
+                                <Text className='text-green-600 font-semibold text-center text-lg'>✅ Payment Complete</Text>
+                            </View>
+                          
                         ) : (
                             <>
                                 <Payment

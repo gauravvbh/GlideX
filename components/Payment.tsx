@@ -43,7 +43,7 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
 
     const fetchPaymentSheetParams = async () => {
         try {
-            const response = await fetch(`${API_URL}/(api)/create-payment`, {
+            const response = await fetch(`${API_URL}/create-payment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -89,6 +89,10 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
             allowsDelayedPaymentMethods: true,
             defaultBillingDetails: {
                 name: 'Gaurav',
+                email: email,
+                address: {
+                    country: 'US',  // <- Add this
+                },
             },
             returnURL: Linking.createURL("stripe-redirect")
         });

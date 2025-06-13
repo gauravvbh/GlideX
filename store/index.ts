@@ -209,21 +209,49 @@ export const useDriverStore = create<DriverStore>((set, get) => ({
             drivers
         }));
     },
+    
+    updateDriverLocation: (driverId, latitude, longitude, address) => {
+        set((state) => {
+            const existingDriver = state.nearbyDrivers.find(driver => driver.id === driverId);
 
-    updateDriverLocation: (driverId: string, latitude: number, longitude: number, address: string) => {
-        set(state => ({
-            nearbyDrivers: state.drivers.map(driver =>
-                driver.id === driverId
-                    ? {
-                        ...driver,
-                        userLatitude: latitude,
-                        userLongitude: longitude,
-                        userAddress: address
-                    }
-                    : driver
-            )
-        }));
-    },
+            // If driver already exists in nearbyDrivers, update their location
+            if (existingDriver) {
+                return {
+                    nearbyDrivers: state.nearbyDrivers.map(driver =>
+                        driver.id === driverId
+                            ? {
+                                ...driver,
+                                userLatitude: latitude,
+                                userLongitude: longitude,
+                                userAddress: address
+                            }
+                            : driver
+                    )
+                };
+            }
+
+            // If driver doesn't exist, find them in state.drivers
+            const driverFromList = state.drivers.find(driver => driver.id === driverId);
+            if (driverFromList) {
+                const newDriverWithLocation = {
+                    ...driverFromList,
+                    userLatitude: latitude,
+                    userLongitude: longitude,
+                    userAddress: address
+                };
+
+                return {
+                    nearbyDrivers: [...state.nearbyDrivers, newDriverWithLocation]
+                };
+            }
+
+            // If driver not found in either list, do nothing
+            return {};
+        });
+    }
+      ,
+
+
     updateSelectedDriverLocation: (latitude: number, longitude: number, address: string) => {
         set(state => ({
             selectedDriverDetails: state.selectedDriverDetails ? {
@@ -235,10 +263,9 @@ export const useDriverStore = create<DriverStore>((set, get) => ({
         }));
     },
 
-
     removeDriverLocation: (driverId: string) => {
         set(state => ({
-            nearbyDrivers: state.drivers.map(driver =>
+            nearbyDrivers: state.nearbyDrivers.map(driver =>
                 driver.id === driverId
                     ? {
                         ...driver,

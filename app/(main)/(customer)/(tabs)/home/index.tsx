@@ -134,7 +134,7 @@ const HomePage = () => {
         const getAllRides = async () => {
             setLoading(true)
             try {
-                const url = `${API_URL}/(api)/ride/get-all?clerk_id=${user.id}`;
+                const url = `${API_URL}/ride/get-all?clerk_id=${user.id}`;
 
 
                 const response = await fetch(url, {
@@ -157,7 +157,7 @@ const HomePage = () => {
     }, [user?.id]);
 
     return (
-        <SafeAreaView className='bg-gray-500 text-white flex-1'>
+        <SafeAreaView className='bg-bgColor text-primaryTextColor flex-1'>
             <FlatList
                 data={(Rides || []).slice(0, 3)}
                 renderItem={({ item }) => <RideCard ride={item} />}
@@ -168,12 +168,12 @@ const HomePage = () => {
                     <View className='flex flex-col items-center justify-center'>
                         {!loading ? (
                             <>
-                                <Image source={images.noResult} className='w-40 h-40' alt='No recent rides found ' resizeMode='contain' />
-                                <Text className='text-sm'>No recent rides found</Text>
+                                <Image source={images.noResult} className='w-40 h-40' alt='No recent rides found' resizeMode='contain' />
+                                <Text className='text-sm text-primaryTextColor'>No recent rides found</Text>
                             </>
                         ) : (
                             <View>
-                                <Text>Loading</Text>
+                                <Text className='text-primaryTextColor'>Loading</Text>
                             </View>
                         )}
                     </View>
@@ -181,7 +181,7 @@ const HomePage = () => {
                 ListHeaderComponent={() => (
                     <>
                         <View className='flex flex-row items-center justify-between my-5'>
-                            <Text className='text-xl capitalize font-JakartaExtraBold'>
+                            <Text className='text-xl text-primaryTextColor capitalize font-JakartaExtraBold'>
                                 Welcome{","} {user?.firstName} 👋
                             </Text>
                             <TouchableOpacity onPress={handleSignOut} className='flex justify-center items-center w-10 h-10 rounded-full bg-white'>
@@ -189,28 +189,29 @@ const HomePage = () => {
                             </TouchableOpacity>
                         </View>
 
-                        <View className="">
+                        <View>
                             <TouchableOpacity
                                 onPress={() => router.push('/autocomplete')}
-                                className="bg-white rounded-full px-4 py-3 mb-4 flex-row items-center gap-x-3"
+                                className='bg-white rounded-full px-4 py-3 mb-4 flex-row items-center gap-x-3'
                             >
-                                <Image source={icons.search} className="w-6 h-6 tint-white" />
-                                <Text className="text-black text-base">Search destination...</Text>
+                                <Image source={icons.search} className='w-6 h-6 tint-white' />
+                                <Text className='text-secondaryTextColor text-base'>Search destination...</Text>
                             </TouchableOpacity>
                         </View>
 
-                        <Text className='text-xl font-JakartaBold mt-5'>Your Current Location:</Text>
+                        <Text className='text-xl text-primaryTextColor font-JakartaBold mt-5'>Your Current Location:</Text>
                         {address && (
-                            <Text className='text-lg font-Jakarta text-gray-700 mb-3'>{address}</Text>
+                            <Text className='text-lg font-Jakarta text-placeholderTextColor mb-3'>{address}</Text>
                         )}
-                        <View className="w-full" style={{ height: 300, borderRadius: 16, overflow: 'hidden' }}>
+                        <View className='w-full' style={{ height: 300, borderRadius: 16, overflow: 'hidden' }}>
                             <Map />
                         </View>
-                        <Text className='text-xl font-JakartaBold mt-5 mb-3'>Recent Rides</Text>
+                        <Text className='text-2xl text-primaryTextColor font-JakartaBold mt-10 mb-3'>Recent Rides</Text>
                     </>
                 )}
             />
         </SafeAreaView>
+
     );
 };
 

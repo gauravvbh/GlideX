@@ -35,7 +35,7 @@ const SignIn = () => {
             if (signInAttempt.status === 'complete' && signInAttempt.createdSessionId) {
                 await setActive({ session: signInAttempt.createdSessionId })
 
-                const result = await fetch(`${API_URL}/(api)/sign-in`, {
+                const result = await fetch(`${API_URL}/sign-in`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ const SignIn = () => {
                 });
                 const { data } = await result.json()
 
-                await fetch(`${API_URL}/(api)/clerk-role`, {
+                await fetch(`${API_URL}/clerk-role`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

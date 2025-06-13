@@ -27,75 +27,69 @@ const RideCard = ({ ride }: { ride: RideData }) => {
 
   return (
     <TouchableOpacity onPress={() => router.push(`/(main)/(customer)/show-ride/${ride_id}`)}>
-      <View className='flex flex-row items-center justify-center rounded-lg shadow-sm shadow-neutral-300'>
-        <View className='flex flex-col items-center justify-center p-3'>
-          <View className='flex flex-row items-center justify-between bg-red-50'>
-            <Image
-              source={{
-                uri: `https://maps.googleapis.com/maps/api/staticmap?center=${destination_latitude},${destination_longitude}&zoom=15&size=200x200&maptype=roadmap&key=${googleMapsApiKey}`
-              }}
-              className='w-[80px] h-[90px] rounded-lg'
+      <View className="bg-gradient-to-br from-[#1e1e1e] to-[#121212] rounded-2xl mb-6 p-[1.5px] shadow-md shadow-gray-300/30">
+        <View className="bg-neutral-900 rounded-2xl p-3">
+          <View className="flex flex-col items-center justify-center w-full">
 
-            />
-            <View className='flex flex-col mx-5 gap-y-5 flex-1'>
-              <View className='flex flex-row items-center gap-x-2'>
-                <Image
-                  source={icons.to}
-                  className='w-5 h-5'
-                />
-                <Text className='text-md font-JakartaMedium' numberOfLines={1}>{origin_address}</Text>
+            {/* Top Map + Route Info */}
+            <View className="flex flex-row items-center justify-between">
+              <Image
+                source={{
+                  uri: `https://maps.googleapis.com/maps/api/staticmap?center=${destination_latitude},${destination_longitude}&zoom=15&size=200x200&maptype=roadmap&key=${googleMapsApiKey}`
+                }}
+                className="w-[80px] h-[90px] rounded-lg"
+              />
+              <View className="flex flex-col mx-5 gap-y-4 flex-1">
+                <View className="flex flex-row items-center gap-x-2">
+                  <Image source={icons.to} className="w-5 h-5 tint-white/80" />
+                  <Text className="text-md font-JakartaMedium text-white/90" numberOfLines={1}>
+                    {origin_address}
+                  </Text>
+                </View>
+
+                <View className="flex flex-row items-center gap-x-2">
+                  <Image source={icons.point} className="w-5 h-5 tint-white/80" />
+                  <Text className="text-md font-JakartaMedium text-white/90" numberOfLines={1}>
+                    {destination_address}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Info Section – DO NOT TOUCH */}
+            <View className="flex flex-col w-full mt-4 bg-neutral-800 rounded-lg p-4 border border-neutral-700">
+              <View className="flex flex-row justify-between mb-3">
+                <Text className="text-sm text-white/60 font-JakartaMedium">Ride Date</Text>
+                <Text className="text-sm text-white/80 font-JakartaMedium">{formatDate(created_at)}</Text>
               </View>
 
-              <View className='flex flex-row items-center gap-x-2'>
-                <Image
-                  source={icons.point}
-                  className='w-5 h-5'
-                />
-                <Text className='text-md font-JakartaMedium' numberOfLines={1}>{destination_address}</Text>
+              <View className="flex flex-row justify-between mb-3">
+                <Text className="text-sm text-white/60 font-JakartaMedium">Driver</Text>
+                <Text className="text-sm text-white/80 font-JakartaMedium">{driver.full_name}</Text>
+              </View>
+
+              <View className="flex flex-row justify-between mb-3">
+                <Text className="text-sm text-white/60 font-JakartaMedium">Car Seats</Text>
+                <Text className="text-sm text-white/80 font-JakartaMedium">{driver.car_seats}</Text>
+              </View>
+
+              <View className="flex flex-row justify-between">
+                <Text className="text-sm text-white/60 font-JakartaMedium">Payment Status</Text>
+                <Text
+                  className={`text-sm font-JakartaMedium capitalize ${payment_status === 'Paid' ? 'text-green-400' : 'text-red-400'}`}
+                >
+                  {payment_status}
+                </Text>
               </View>
             </View>
-          </View>
 
-          <View className='flex flex-col w-full mt-5 bg-general-500 rounded-lg p-3 items-start justify-center'>
-            <View className='flex flex-row items-center w-full justify-between mb-5'>
-              <Text className='text-md font-JakartaMedium text-gray-500'>
-                Ride Date
-              </Text>
-              <Text className='text-md font-JakartaMedium text-gray-500'>
-                {formatDate(created_at)}
-              </Text>
-            </View>
-
-            <View className='flex flex-row items-center w-full justify-between mb-5'>
-              <Text className='text-md font-JakartaMedium text-gray-500'>
-                Driver
-              </Text>
-              <Text className='text-md font-JakartaMedium text-gray-500'>
-                {driver.full_name}
-              </Text>
-            </View>
-
-            <View className='flex flex-row items-center w-full justify-between mb-5'>
-              <Text className='text-md font-JakartaMedium text-gray-500'>
-                Car Seats
-              </Text>
-              <Text className='text-md font-JakartaMedium text-gray-500'>
-                {driver.car_seats}
-              </Text>
-            </View>
-
-            <View className='flex flex-row items-center w-full justify-between mb-5'>
-              <Text className='text-md font-JakartaMedium text-gray-500'>
-                Payment Status
-              </Text>
-              <Text className={`text-md font-JakartaMedium capitalize ${payment_status === 'Paid' ? 'text-green-500' : 'text-red-500'}`}>
-                {payment_status}
-              </Text>
-            </View>
           </View>
         </View>
       </View>
     </TouchableOpacity>
+
+  
+
   )
 }
 

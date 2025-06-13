@@ -120,6 +120,7 @@ const RideHome = () => {
                 }
                 else {
                     // 🚀 When toggled ON duty, tell the websocket
+                    console.log('bapu on duty')
                     ws.send(JSON.stringify({
                         type: 'onDuty',
                         role: 'rider',
@@ -264,7 +265,7 @@ const RideHome = () => {
         setLoading(true)
         const getDriverData = async () => {
             try {
-                const res = await fetch(`/(api)/driver/get?clerk_id=${user?.id}`);
+                const res = await fetch(`/driver/get?clerk_id=${user?.id}`);
                 const data = await res.json();
 
                 const isDataPresent = !!data[0].car_image_url;
@@ -291,7 +292,7 @@ const RideHome = () => {
         setLoading(true)
         const getDriverData = async () => {
             try {
-                const res = await fetch(`/(api)/driver/calculate-price?clerk_id=${user?.id}`);
+                const res = await fetch(`/driver/calculate-price?clerk_id=${user?.id}`);
                 const data = await res.json();
 
                 setTodayEarnings(data.totalEarnings)

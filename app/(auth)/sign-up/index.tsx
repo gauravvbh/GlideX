@@ -73,7 +73,7 @@ const SignUp = () => {
             if (isEmailVerified) {
                 await setActive!({ session: signUpAttempt.createdSessionId })
                 const fullName = `${form.firstName} ${form.lastName}`
-                const result = await fetch(`${API_URL}/(api)/user`, {
+                const result = await fetch(`${API_URL}/user`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -86,6 +86,7 @@ const SignUp = () => {
                         role: role
                     })
                 });
+                console.log('result')
                 console.log(result)
 
                 setVerification((prev) => ({

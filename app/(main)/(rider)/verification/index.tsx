@@ -78,7 +78,7 @@ const VerificationPage = () => {
 
     const handleSubmit = async () => {
         try {
-            const doneUpdate = await fetch('/(api)/driver/verify-driver', {
+            const doneUpdate = await fetch('/driver/verify-driver', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

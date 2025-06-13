@@ -22,7 +22,7 @@ const RideLayout = ({ title, children, snapPoints }: { title: string, children: 
     const router = useRouter()
     return (
         <GestureHandlerRootView>
-            <View className='flex-1 bg-white'>
+            <View className='flex-1 bg-red-600'>
                 <View className='flex flex-1 h-screen bg-blue-500'>
                     <View className='flex flex-row absolute z-10 top-16  items-center justify-start px-5'>
                         <TouchableOpacity
@@ -41,7 +41,7 @@ const RideLayout = ({ title, children, snapPoints }: { title: string, children: 
                                 />
                             </View>
                         </TouchableOpacity>
-                        <Text className='text-xl font-JakartaSemiBold ml-5'>{title || 'Go back'}</Text>
+                        <Text className='text-xl text-white font-JakartaSemiBold ml-5'>{title || 'Go back'}</Text>
                     </View>
                     <Map />
                 </View>
@@ -52,11 +52,12 @@ const RideLayout = ({ title, children, snapPoints }: { title: string, children: 
                     snapPoints={snapPoints || ['40%', '80%']}
                     index={0}
                     style={{
+                        
                         borderTopEndRadius: 50
                     }}
 
                 >
-                    <BottomSheetView style={{ flex: 1, padding: 20, borderRadius: 50 }}>
+                    <BottomSheetView style={{flex: 1, padding: 20, borderRadius: 50 }}>
                         {children}
                     </BottomSheetView>
                 </BottomSheet>

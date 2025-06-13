@@ -66,6 +66,7 @@ import { usePathname } from 'expo-router'
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Driver } from '@/types/type'
 import Constants from "expo-constants";
+import { useUser } from '@clerk/clerk-expo'
 
 let MapView, Marker, PROVIDER_GOOGLE, MapViewDirections;
 if (Platform.OS !== 'web') {
@@ -108,6 +109,8 @@ const Map = () => {
   } = useDriver();
 
 
+  const { user } = useUser();
+  const role = user?.publicMetadata?.role;
 
 
 
@@ -128,15 +131,10 @@ const Map = () => {
   const [driverDropoffLatitude, setDriverDropoffLatitude] = useState<number>();
   const [driverDropoffLongitude, setDriverDropoffLongitude] = useState<number>()
   const [rideStatus, setRideStatus] = useState<string>('offer')
-  console.log('rideStatus')
-  console.log(rideStatus)
-  console.log(rideStatus)
+
   // const [markers, setMarkers] = useState<(PlainDriver)[]>([]);
   const mapRef = useRef<any>(null);
   const lastLocationRef = useRef<{ lat: number, lng: number } | null>(null);
-
-  console.log('driverPickupLatitude from path', path)
-  console.log(userLatitude)
 
 
   const {
@@ -151,7 +149,8 @@ const Map = () => {
     selectedDriverDetails,
     updateSelectedDriverLocation,
     addNearbyDrivers,
-    giveRiderDetails
+    giveRiderDetails,
+    clearSelectedDriver
   } = useDriverStore();
 
 
@@ -170,7 +169,6 @@ const Map = () => {
       const details = giveRideDetails(activeRideId!)
 
       if (details) {
-        console.log('done')
         setDriverPickupLatitude(details.pickupDetails.pickupLatitude);
         setDriverPickupLongitude(details.pickupDetails.pickupLongitude);
         setDriverDropoffLatitude(details.dropoffDetails.dropoffLatitude);
@@ -186,6 +184,7 @@ const Map = () => {
     }
   }, [activeRideId])
 
+
   const longitude = userLongitude ?? driverLongitude;
   const latitude = userLatitude ?? driverLatitude;
   const driverOriginLatitude = rideStatus === 'offer' ? driverLatitude : driverPickupLatitude;
@@ -196,17 +195,12 @@ const Map = () => {
   const customerDestinationLatitude = rideStatus === 'offer' ? driverLatitude : destinationLatitude;
   const customerDestinationLongitude = rideStatus === 'offer' ? driverLongitude : destinationLongitude;
 
-  console.log(rideStatus)
-  console.log(rideStatus)
 
   const [markers, setMarkers] = useState(nearbyDrivers)
 
   // const selectedDriverDetails = nearbyDrivers?.find(
   //   (driver) => driver.id === selectedDriverId,
   // );
-
-  console.log('selected driver details', selectedDriverDetails)
-  console.log('selected driver details', !selectedDriverDetails)
 
 
   useEffect(() => {
@@ -232,7 +226,7 @@ const Map = () => {
 
     // Attach onmessage regardless
     socket.onmessage = (event) => {
-      console.log('Message received from WebSocket:');
+      console.log('😍😍😍Message received from WebSocket:');
       console.log(event.data)
       const message = JSON.parse(event.data);
       console.log('📍Parsed message:');
@@ -263,6 +257,7 @@ const Map = () => {
       if (message.type === 'driverOffline') {
         removeDriverLocation(message.driverId)
         removeNearbyDriver(message.driverId)
+        clearSelectedDriver()
 
         const updatedDrivers = useDriverStore.getState().nearbyDrivers
 
@@ -271,8 +266,14 @@ const Map = () => {
 
       if (message.type === 'driverOnDuty') {
         const riderDetails = giveRiderDetails(message.id);
+        console.log('😍😍😍😍😍')
+        console.log(riderDetails)
         if (riderDetails !== undefined) {
           addNearbyDrivers(riderDetails);
+          const updatedDrivers = useDriverStore.getState().nearbyDrivers
+          console.log('®️®️®️®️®️')
+          console.log(updatedDrivers)
+          updateMarkersOnMap(updatedDrivers);
         }
       }
     };
@@ -284,6 +285,10 @@ const Map = () => {
     //   }
     // };
   }, [ws]);
+
+  useEffect(() => {
+    setMarkers(nearbyDrivers);
+  }, [nearbyDrivers]);
 
   const updateMarkersOnMap = async (driversToUse?: PlainDriver[]) => {
     if (userLatitude && userLongitude) {
@@ -415,7 +420,7 @@ const Map = () => {
         // Fetch only once
         if (!drivers || drivers.length === 0) {
           try {
-            const url = `${API_URL}/(api)/driver/get-all`;
+            const url = `${API_URL}/driver/get-all`;
 
             const response = await fetch(url, {
               method: 'GET',
@@ -586,6 +591,7 @@ const Map = () => {
 
 
 
+
   if (loading || (!longitude && !latitude)) {
     return (
       <View className="flex justify-center items-center w-full h-full">
@@ -640,7 +646,8 @@ const Map = () => {
                 />
               )}
 
-              {driverDestinationLatitude && driverDestinationLongitude && path !== '/final-page' && (
+
+              {role !== 'customer' && driverDestinationLatitude && driverDestinationLongitude && path !== '/final-page' && (
                 <Marker
                   key={`${driverDestinationLatitude}-${driverDestinationLongitude}-${rideStatus}`}
                   coordinate={{
@@ -666,7 +673,7 @@ const Map = () => {
                 />
               )}
 
-
+              {/* hahahahhz */}
               {userLatitude && userLongitude && destinationLatitude && destinationLongitude && (
                 <MapViewDirections
                   key={`${selectedDriverDetails?.userLatitude}-${selectedDriverDetails?.userLongitude}-${rideStatus}-${userLatitude}-${userLongitude}-${destinationLatitude}-${destinationLongitude}`}
@@ -725,7 +732,8 @@ const Map = () => {
                 />
               )}
 
-              {driverOriginLatitude && driverOriginLongitude && driverDestinationLatitude && driverDestinationLongitude && (
+
+              {role !== 'customer' && driverOriginLatitude && driverOriginLongitude && driverDestinationLatitude && driverDestinationLongitude && (
                 <MapViewDirections
                   key={`${driverOriginLatitude}-${driverDestinationLatitude}-${rideStatus}`}
                   origin={{
@@ -745,11 +753,13 @@ const Map = () => {
             </>
           )
         }
+
+
         {markers && markers.length > 0 && !selectedDriverDetails && (
           markers?.filter(marker => marker.userLatitude && marker.userLongitude)
-            .map(marker => (
+            .map((marker,index) => (
               <Marker
-                key={`${marker.id}-${rideStatus}`}
+                key={`${marker.id}-${rideStatus}-${index}`}
                 coordinate={{
                   latitude: marker.userLatitude!,
                   longitude: marker.userLongitude!
@@ -762,6 +772,7 @@ const Map = () => {
               />
             )) || []
         )}
+
       </MapView>
 
       <TouchableOpacity

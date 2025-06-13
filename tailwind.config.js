@@ -20,6 +20,15 @@ module.exports = {
         JakartaSemiBold: ["Jakarta-SemiBold", "sans-serif"],
       },
       colors: {
+        bgColor: '#121212',              // Main background color (very dark)
+        cardBgColor: '#1E1E1E',          // Card or secondary background
+        hoverBgColor: '#2C2C2C',         // Hover background color
+        borderColor: '#3A3A3A',          // Border and divider color
+        primaryTextColor: '#E0E0E0',     // Main text color (light gray)
+        secondaryTextColor: '#AAAAAA',   // Secondary/muted text color
+        placeholderTextColor: '#555555', // Placeholder or disabled text color
+        accentColor: '#64B5F6',           // Accent (blue-ish) for highlights, links
+
         primary: {
           100: "#F5F8FF",
           200: "#EBF4FF",

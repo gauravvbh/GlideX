@@ -29,8 +29,11 @@ const FindRidePage = () => {
                 <Text className='text-lg font-JakartaSemiBold mb-3'>From</Text>
                 <GoogleTextInput
                     icon={icons.target}
-                    initialLocation={userAddress!}
-                    containerStyle='bg-neutral-100'
+                    initialLocation={
+                        (userAddress && userAddress.length > 49)
+                            ? userAddress.slice(0, 49) + '...'
+                            : userAddress || 'Enter Address'
+                    }
                     textInputBackgroundColor='#f5f5f5'
                     handlePress={(location) => setUserLocation(location)}
                 />
@@ -40,8 +43,11 @@ const FindRidePage = () => {
                 <Text className='text-lg font-JakartaSemiBold mb-3'>To</Text>
                 <GoogleTextInput
                     icon={icons.map}
-                    initialLocation={destinationAddress || 'Enter Destination'}
-                    containerStyle='bg-neutral-100'
+                    initialLocation={
+                        (destinationAddress && destinationAddress.length > 49)
+                            ? destinationAddress.slice(0, 49) + '...'
+                            : destinationAddress || 'Enter Destination'
+                    }
                     textInputBackgroundColor='transparent'
                     handlePress={(location) => setDestinationLocation(location)}
                 />

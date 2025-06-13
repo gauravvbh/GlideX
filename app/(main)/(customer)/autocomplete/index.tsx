@@ -91,38 +91,42 @@ const AutocompletePage = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-black px-5">
-            <TouchableOpacity onPress={() => router.back()} className='flex justify-center items-center w-10 h-10 rounded-full bg-white'>
-                <Image source={icons.backArrow} className='w-5 h-5' />
+        <SafeAreaView className="flex-1 bg-bgColor px-5">
+            <TouchableOpacity
+                onPress={() => router.back()}
+                className="flex justify-center items-center w-10 h-10 rounded-full bg-primaryTextColor"
+            >
+                <Image source={icons.backArrow} className="w-5 h-5" />
             </TouchableOpacity>
+
             <KeyboardAvoidingView
                 className="flex-1"
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
                 <View className="mt-10 mb-6 items-center">
-                    <Text className="text-white text-3xl font-bold text-center">
+                    <Text className="text-primaryTextColor text-3xl font-bold text-center">
                         Where do you want to go?
                     </Text>
                 </View>
 
-                <View className="flex-row items-center bg-neutral-800 rounded-full px-4 py-3">
-                    <Image source={icons.search} className="w-6 h-6 tint-white" />
+                <View className="flex-row items-center bg-cardBgColor rounded-full px-4 py-3 mb-5">
+                    <Image source={icons.search} className="w-6 h-6 tint-primaryTextColor" />
                     <TextInput
                         placeholder="Search destination..."
-                        placeholderTextColor="#aaa"
+                        placeholderTextColor="#E0E0E0"
                         value={query}
                         onChangeText={setQuery}
-                        className="flex-1 text-white text-base ml-3"
+                        className="flex-1 text-primaryTextColor text-base ml-3"
                     />
                     {query.length > 0 && (
                         <TouchableOpacity onPress={() => setQuery('')}>
-                            <Image source={icons.close} className="w-5 h-5 ml-2 tint-white" />
+                            <Image source={icons.close} className="w-5 h-5 ml-2 tint-primaryTextColor" />
                         </TouchableOpacity>
                     )}
                 </View>
 
                 {loading && (
-                    <ActivityIndicator size="large" color="#aaa" className="mt-5" />
+                    <ActivityIndicator size="large" color="#555555" className="mt-5" />
                 )}
 
                 <FlatList
@@ -132,17 +136,16 @@ const AutocompletePage = () => {
                     contentContainerStyle={{ paddingBottom: 50 }}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            onPress={() =>
-                                fetchPlaceDetailsAndHandle(item.place_id, item.description)
-                            }
-                            className="p-4 border-b border-neutral-700"
+                            onPress={() => fetchPlaceDetailsAndHandle(item.place_id, item.description)}
+                            className="p-4 border-b border-borderColor"
                         >
-                            <Text className="text-white text-base">{item.description}</Text>
+                            <Text className="text-primaryTextColor text-xl">{item.description}</Text>
                         </TouchableOpacity>
                     )}
                 />
             </KeyboardAvoidingView>
         </SafeAreaView>
+
     );
 };
 
