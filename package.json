@@ -50,7 +50,6 @@
     "expo-web-browser": "~14.1.6",
     "firebase": "^11.6.0",
     "nativewind": "^4.1.23",
-    "next": "^15.3.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
