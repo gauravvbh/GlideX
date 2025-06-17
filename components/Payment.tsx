@@ -43,7 +43,7 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
 
     const fetchPaymentSheetParams = async () => {
         try {
-            const response = await fetch(`${API_URL}/create-payment`, {
+            const response = await fetch('https://stripe-server-for-glidex.onrender.com/create-payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,16 +55,15 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
                 }),
             });
 
-            // Log the status and response text for debugging
-            // console.log('Response Status:', response.status);
-            const responseBody = await response.text(); // Or response.json() if JSON response
-            // console.log('Response Body:', responseBody);
 
             if (!response.ok) {
+                console.log('⚠️')
                 throw new Error('Failed to create payment');
             }
+            
+            const data = await response.json();
 
-            const data = JSON.parse(responseBody);
+            console.log(data)
             const { paymentIntent, ephemeralKey, customer, paymentIntentId } = data;
             return { paymentIntent, ephemeralKey, customer, paymentIntentId };
         } catch (error) {
@@ -108,7 +107,7 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
         const { error } = await presentPaymentSheet();
 
         if (error) {
-            Alert.alert(`Error code: ${error.code}`, error.message);
+            Alert.alert(`Error: ${error.code}`, error.message);
         } else {
             setSuccess(true);
             handlePaymentDone();

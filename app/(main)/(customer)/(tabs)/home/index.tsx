@@ -12,6 +12,7 @@ import Map from '@/components/Map';
 import Constants from 'expo-constants';
 
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
 const HomePage = () => {
     const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL } = useCustomer();
@@ -35,7 +36,8 @@ const HomePage = () => {
         let newWs: WebSocket;
 
         if (!ws && user) {
-            newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com'); //wss://websocket-server-for-glidex.onrender.com
+            // newWs = new WebSocket('ws://192.168.0.146:8080'); //wss://websocket-server-for-glidex.onrender.com
+            newWs = new WebSocket(WEBSOCKET_API_URL);
 
             newWs.onopen = () => {
                 newWs.send(JSON.stringify({
@@ -160,6 +162,7 @@ const HomePage = () => {
         <SafeAreaView className='bg-bgColor text-primaryTextColor flex-1'>
             <FlatList
                 data={(Rides || []).slice(0, 3)}
+                keyExtractor={(item, index) => item?.ride_id?.toString() || `fallback-key-${index}`}
                 renderItem={({ item }) => <RideCard ride={item} />}
                 className='px-5'
                 keyboardShouldPersistTaps='handled'

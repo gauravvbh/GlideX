@@ -8,9 +8,9 @@ import CustomButton from "@/components/CustomButton";
 import { formatTime } from "@/lib/utils";
 import { useEffect } from "react";
 import { useUser } from "@clerk/clerk-expo";
+import Constants from 'expo-constants';
 
-
-
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
 
 
@@ -18,7 +18,7 @@ import { useUser } from "@clerk/clerk-expo";
 const ConfirmRidePage = () => {
     const router = useRouter()
     const { userAddress, destinationAddress, userLatitude, userLongitude, destinationLatitude, destinationLongitude } = useCustomer();
-    const { selectedDriverId, nearbyDrivers, setSelectedDriverDetails, updateDriverLocation, updateSelectedDriverLocation,selectedDriverDetails } = useDriverStore();
+    const { selectedDriverId, nearbyDrivers, setSelectedDriverDetails, updateDriverLocation, updateSelectedDriverLocation, selectedDriverDetails } = useDriverStore();
     const { ws, setWebSocket } = useWSStore();
     const { user } = useUser()
     const { addRideOffer } = useRideOfferStore(store => store);
@@ -41,7 +41,8 @@ const ConfirmRidePage = () => {
         let socket: WebSocket;
 
         if (!ws) {
-            const newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com');
+            const newWs = new WebSocket(WEBSOCKET_API_URL);
+            
 
             newWs.onopen = () => {
                 console.log("WebSocket connected");

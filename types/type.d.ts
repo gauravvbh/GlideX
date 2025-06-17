@@ -91,6 +91,7 @@ declare interface UserData {
     profile_image_url: string | null;
     rating?: number | null;
     full_name: string | null;
+    email: string | null;
     userLatitude?: number | null;
     userLongitude?: number | null;
     userAddress?: string | null;

@@ -1,16 +1,22 @@
 // ReachCustomer.tsx
 
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import SlideButton from '@/components/SlideButton';
 import Map from '@/components/Map';
 import { useDriver, useRideOfferStore, useWSStore } from '@/store';
 import * as Location from 'expo-location';
-import {  LocationObject } from 'expo-location';
+import { LocationObject } from 'expo-location';
 import { useUser } from '@clerk/clerk-expo';
 import ReactNativeModal from 'react-native-modal';
 import CustomButton from '@/components/CustomButton';
+import { Linking } from 'react-native';
+import Constants from 'expo-constants';
+
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
+
+
 
 const ReachCustomer = () => {
     const router = useRouter();
@@ -18,9 +24,11 @@ const ReachCustomer = () => {
 
     const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
 
-    const { activeRideId, giveRideDetails, removeRideOffer } = useRideOfferStore(state=>state);
+    const { activeRideId, giveRideDetails, removeRideOffer } = useRideOfferStore(state => state);
     const { ws, setWebSocket } = useWSStore();
     const [showModal, setShowModal] = useState<boolean>(false)
+    const [verifyReached, setVerifyReached] = useState<boolean>(false)
+    const [verifyReachedStage, setVerifyReachedStage] = useState<'waiting' | 'alert'>('waiting');
     const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
 
 
@@ -31,7 +39,7 @@ const ReachCustomer = () => {
 
         // Either create a new one or use existing one
         if (!ws) {
-            const newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com');
+            const newWs = new WebSocket(WEBSOCKET_API_URL);
 
             newWs.onopen = () => {
                 console.log('WebSocket connected');
@@ -45,6 +53,31 @@ const ReachCustomer = () => {
             socket = newWs;
         } else {
             socket = ws;
+        }
+
+
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            console.log("📝 Received WS message:", message);
+
+            if (message.type === 'reachedVerified') {
+                if (activeRideId) {
+                    const rideDetails = giveRideDetails(activeRideId)
+                    setVerifyReached(false)
+                    setVerifyReachedStage('waiting');
+                    setShowModal(true)
+                    removeRideOffer(rideDetails?.id!)
+                }
+            }
+
+            if (message.type === 'customerDidNotVerify') {
+                if (activeRideId) {
+                    const rideDetails = giveRideDetails(activeRideId)
+                    removeRideOffer(rideDetails?.id!)
+                    // Trigger emergency alert UI
+                    setVerifyReachedStage('alert');
+                }
+            }
         }
     }, [ws]);
 
@@ -153,8 +186,6 @@ const ReachCustomer = () => {
 
 
 
-console.log(activeRideId)
-console.log(activeRideId)
     const handleSlideComplete = () => {
         if (activeRideId) {
             const rideDetails = giveRideDetails(activeRideId)
@@ -168,10 +199,32 @@ console.log(activeRideId)
                     id: rideDetails?.id,
                 }))
             }
-            setShowModal(true)
-            removeRideOffer(rideDetails?.id!)
+            setVerifyReached(true);
         }
     };
+
+    const handleCallCustomer = () => {
+        if (activeRideId) {
+            const rideDetails = giveRideDetails(activeRideId)
+
+            const customerPhoneNumber = `+91${rideDetails?.customerDetails.number}`;
+
+            const url = `tel:${customerPhoneNumber}`;
+            Linking.openURL(url).catch(() => {
+                Alert.alert('Error', 'Unable to place call to customer.');
+            });
+        }
+
+    };
+
+    const handleCallSupport = () => {
+        const supportPhoneNumber = '+916290547258'; // Replace with your support number
+        const url = `tel:${supportPhoneNumber}`;
+        Linking.openURL(url).catch(() => {
+            Alert.alert('Error', 'Unable to place call to support.');
+        });
+    };
+
 
 
     return (
@@ -179,12 +232,12 @@ console.log(activeRideId)
             <View className='h-2/3'>
                 <Map />
             </View>
-            <View className='flex-1 justify-center items-center px-6 bg-white'>
-                <View className="flex-1 justify-center items-center px-6 bg-white">
-                    <Text className="text-2xl font-bold mb-4 text-black">
+            <View className='flex-1 justify-center items-center px-5 bg-white'>
+                <View className="flex-1 justify-center items-center px-5 bg-white">
+                    <Text className="text-xl font-JakartaBold mb-4 text-black flex justify-center text-center">
                         Reach the Customer's Destination Location
                     </Text>
-                    <Text className="text-center text-gray-600 mb-10">
+                    <Text className="text-center text-gray-600 mb-10 text-lg">
                         Slide the button below once you’ve arrived at the dropoff point.
                     </Text>
 
@@ -210,6 +263,64 @@ console.log(activeRideId)
 
                 </View>
             </ReactNativeModal>
+
+
+            <ReactNativeModal isVisible={verifyReached}>
+                <View className="bg-white border border-gray-300 p-6 rounded-lg items-center w-11/12 self-center">
+                    {verifyReachedStage === 'waiting' && (
+                        <>
+                            <Text className="text-xl font-JakartaBold text-center mb-2 text-black">
+                                Waiting for Customer Confirmation
+                            </Text>
+                            <Text className="text-center text-gray-600 mb-5">
+                                Request sent to customer. Awaiting their drop-off confirmation.
+                            </Text>
+                            <ActivityIndicator size="small" color="#64B5F6" />
+                        </>
+                    )}
+
+                    {verifyReachedStage === 'alert' && (
+                        <>
+                            <Text className="text-xl font-JakartaBold text-center mb-2 text-red-600">
+                                ⚠️ No Response from Customer
+                            </Text>
+                            <Text className="text-center text-gray-600 mb-6">
+                                Customer hasn't confirmed. Please check their safety or report the situation.
+                            </Text>
+
+                            <View className='flex-row items-center mb-5 gap-x-2'>
+                                <CustomButton
+                                    title="Call Customer"
+                                    className="w-1/2 mb-3"
+                                    onPress={handleCallCustomer}
+                                />
+
+                                <CustomButton
+                                    title="Call Support"
+                                    bgVariant="danger"
+                                    textVariant="primary"
+                                    className="w-1/2 mb-3"
+                                    onPress={handleCallSupport}
+                                />
+                            </View>
+
+                            <CustomButton
+                                title="Browse Home"
+                                bgVariant="secondary"
+                                textVariant="secondary"
+                                className="w-full"
+                                onPress={() => {
+                                    setVerifyReached(false);
+                                    setVerifyReachedStage("waiting");
+                                    router.replace('/(main)/(rider)/home');
+                                }}
+                            />
+                        </>
+                    )}
+                </View>
+            </ReactNativeModal>
+
+
         </View>
     );
 };

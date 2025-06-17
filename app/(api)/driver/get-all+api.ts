@@ -15,7 +15,7 @@ export async function GET() {
                 rating: drivers.rating,
                 id: drivers.user_id,
                 email: users.email,
-                name: users.name,
+                full_name: users.name,
                 number: users.number
             })
             .from(users)

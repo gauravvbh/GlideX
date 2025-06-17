@@ -17,7 +17,7 @@ const SlideButton: React.FC<SlideButtonProps> = ({
     textColor = '#fff',
 }) => {
     const sliderWidth = SCREEN_WIDTH * 0.85;
-    const handleWidth = 60;
+    const handleWidth = 56;
 
     const pan = useRef(new Animated.ValueXY()).current;
 

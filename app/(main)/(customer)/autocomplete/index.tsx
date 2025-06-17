@@ -55,7 +55,7 @@ const AutocompletePage = () => {
                 const response = await fetch(
                     `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
                         query
-                    )}&key=${googlePlacesApiKey}&location=${userLatitude},${userLongitude}&radius=10000&language=en&components=country:in`
+                    )}&key=${googlePlacesApiKey}&location=${userLatitude},${userLongitude}&radius=5000&language=en&components=country:in`
                 );
                 const data = await response.json();
                 setSuggestions(data.predictions || []);

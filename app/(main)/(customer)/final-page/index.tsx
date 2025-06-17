@@ -1,5 +1,5 @@
 import { View, Text, Platform } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import RideLayout from '@/components/RideLayout';
 import { useCustomer, useDriverStore, useRideOfferStore, useWSStore } from '@/store';
 import PaymentPage from "@/components/Payment";
@@ -16,9 +16,14 @@ import { useRouter } from 'expo-router';
 import OnWay from '@/components/OnWay';
 import ReactNativeModal from 'react-native-modal';
 import Constants from 'expo-constants';
+import SlideButton from '@/components/SlideButton';
+import { getDangerEmailHtml } from '@/lib/dangerAlertTemplate';
+
+
 
 const publishableKey = Constants.expoConfig?.extra?.stripeApiKey;
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
 // Only import StripeProvider in non-web environments to avoid bundling issues
 let StripeProvider: any = ({ children }: any) => <>{children}</>;
@@ -53,6 +58,13 @@ const FinalPage = () => {
     const [driverReached, setDriverReached] = useState(false);
     const { removeRideOffer, setActiveRideId, giveRideDetails, rideOffer, activeRideId, changeStatus } = useRideOfferStore(state => state);
     const [showModal, setShowModal] = useState<boolean>(false);
+    const [verifyReached, setVerifyReached] = useState<boolean>(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [countdown, setCountdown] = useState(10);
+    const [alertSent, setAlertSent] = useState(false);
+
+
+
 
     const {
         setDrivers,
@@ -76,7 +88,7 @@ const FinalPage = () => {
         let socket: WebSocket;
 
         if (!ws) {
-            const newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com');
+            const newWs = new WebSocket(WEBSOCKET_API_URL);
 
             newWs.onopen = () => console.log('WebSocket connected');
             newWs.onerror = (err) => console.log('WebSocket error:', err);
@@ -129,13 +141,68 @@ const FinalPage = () => {
             }
 
             if (message.type === 'rideEnded') {
-                setPage('End');
-                setTimeout(() => setShowModal(true), 5000);
+                setVerifyReached(true)
             }
         };
     }, [ws]);
-    console.log(page)
-    console.log(page)
+
+    console.log('👋')
+    console.log(selectedDriverDetails)
+
+    useEffect(() => {
+        if (verifyReached) {
+            setCountdown(10);
+
+            timeoutRef.current = setTimeout(() => {
+                console.log("🔔 Timer done. Sending email...");
+
+                setAlertSent(true);
+
+                fetch(`${API_URL}/send-email`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        to: user?.emailAddresses[0].emailAddress,
+                        subject: `Ride Alert – Destination Not Confirmed by ${user?.firstName}`,
+                        html: getDangerEmailHtml(selectedDriverDetails!, user!),
+                    }),
+                }).catch(err => console.log("❌ Email send error", err));
+
+                const rideDetails = giveRideDetails(activeRideId!);
+                if (ws && ws.readyState === WebSocket.OPEN && rideDetails) {
+                    ws.send(JSON.stringify({
+                        type: 'noConfirmationAlert',
+                        role: 'customer',
+                        rider_id: rideDetails.rider_id,
+                        id: rideDetails.id,
+                    }));
+                }
+
+
+            }, 10000);
+
+            const countdownInterval = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(countdownInterval);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
+            return () => {
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                    timeoutRef.current = null;
+                }
+                clearInterval(countdownInterval);
+            };
+        }
+    }, [verifyReached]);
+    
+
+
 
     useEffect(() => {
         const saveRideToDB = async () => {
@@ -172,6 +239,32 @@ const FinalPage = () => {
 
     const handleCancelRide = () => { };
 
+    const handleSlideComplete = () => {
+
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+            console.log("🛑 Timer cancelled by user sliding");
+        }
+
+        if (activeRideId) {
+            const rideDetails = giveRideDetails(activeRideId)
+            console.log('rideDetails')
+            console.log(rideDetails)
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'reachedDestinationVerified',
+                    role: 'customer',
+                    rider_id: rideDetails?.rider_id,
+                    id: rideDetails?.id,
+                }))
+            }
+        }
+        setPage('End');
+        setVerifyReached(false)
+        setTimeout(() => setShowModal(true), 5000);
+    }
+
     const handleGoBack = () => {
         clearDestinationLocation();
         clearSelectedDriver();
@@ -199,7 +292,7 @@ const FinalPage = () => {
                 <ReactNativeModal isVisible={showModal}>
                     <View className='bg-white p-5 rounded-md'>
                         <Text className='text-2xl font-bold text-center mb-2'>🎉 Ride Completed!</Text>
-                        
+
 
                         {!paid ? (
                             <>
@@ -226,6 +319,41 @@ const FinalPage = () => {
                         />
                     </View>
                 </ReactNativeModal>
+
+                <ReactNativeModal isVisible={verifyReached}>
+                    <View className="bg-white p-5 rounded-lg items-center">
+
+                        {alertSent ? (
+                            <>
+                                <Text className="text-red-600 text-xl font-JakartaSemiBold text-center mb-2">
+                                    🚨 Safety Alert Sent
+                                </Text>
+                                <Text className="text-center text-lg text-gray-600 mb-4">
+                                    You didn’t confirm your destination in time. An alert was sent to your email.
+                                </Text>
+                                <CustomButton title="Return to Home" onPress={handleGoBack} className='w-1/2' />
+                            </>
+                        ) : (
+                            <>
+                                <Text className="text-red-600 text-lg font-semibold text-center mb-2">
+                                    ⚠️ Please confirm your destination
+                                </Text>
+                                <Text className="text-gray-600 text-center mb-4">
+                                    If you don’t confirm within <Text className="font-bold">{countdown}</Text> seconds,
+                                    an emergency alert will be sent to your email.
+                                </Text>
+                                <SlideButton
+                                    title="Slide to Confirm the Destination Location"
+                                    onComplete={handleSlideComplete}
+                                    bgColor="#0F9D58"
+                                    textColor="#fff"
+                                />
+                            </>
+                        )}
+                    </View>
+                </ReactNativeModal>
+
+
 
             </RideLayout>
         </StripeProvider>

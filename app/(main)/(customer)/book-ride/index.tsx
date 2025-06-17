@@ -48,6 +48,8 @@ const BookRidePage = () => {
                                     const findSelectedDriverDetails = nearbyDrivers?.find(
                                         (driver) => driver.id === selectedDriverId,
                                     );
+                                    console.log('😁')
+                                    console.log(findSelectedDriverDetails)
                                     setSelectedDriverDetails(findSelectedDriverDetails!);
                                 }
                                 router.push('/(main)/confirm-ride' as never)

@@ -68,6 +68,7 @@ import { Driver } from '@/types/type'
 import Constants from "expo-constants";
 import { useUser } from '@clerk/clerk-expo'
 
+
 let MapView, Marker, PROVIDER_GOOGLE, MapViewDirections;
 if (Platform.OS !== 'web') {
   const Maps = require('react-native-maps');
@@ -88,6 +89,7 @@ type PlainDriver = Omit<Driver, 'setCarImageURL' | 'setCarSeats' | 'setUserLocat
 // Google Maps API Key setup
 const googlePlacesApiKey = Constants.expoConfig?.extra?.googleMapsApiKey ?? "";
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
 
 const Map = () => {
@@ -184,6 +186,15 @@ const Map = () => {
     }
   }, [activeRideId])
 
+  useEffect(() => {
+    if (path === '/home') {
+      setDriverDropoffLatitude(undefined);
+      setDriverDropoffLongitude(undefined);
+      setDriverPickupLatitude(undefined);
+      setDriverPickupLongitude(undefined);
+    }
+  }, [path])
+
 
   const longitude = userLongitude ?? driverLongitude;
   const latitude = userLatitude ?? driverLatitude;
@@ -194,6 +205,7 @@ const Map = () => {
 
   const customerDestinationLatitude = rideStatus === 'offer' ? driverLatitude : destinationLatitude;
   const customerDestinationLongitude = rideStatus === 'offer' ? driverLongitude : destinationLongitude;
+
 
 
   const [markers, setMarkers] = useState(nearbyDrivers)
@@ -208,7 +220,7 @@ const Map = () => {
 
     // Either create a new one or use existing one
     if (!ws) {
-      const newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com');
+      const newWs = new WebSocket(WEBSOCKET_API_URL);
 
       newWs.onopen = () => {
         console.log('WebSocket connected');
@@ -527,6 +539,9 @@ const Map = () => {
       const endLat = destinationLatitude ?? driverDestinationLatitude;
       const endLng = destinationLongitude ?? driverDestinationLongitude;
 
+      console.log('👋👋')
+      console.log(driverOriginLatitude)
+
       const isValidCoordinate = (value?: number) =>
         typeof value === 'number' && !isNaN(value);
 
@@ -550,9 +565,9 @@ const Map = () => {
           ],
           {
             edgePadding: {
-              top: 100,
+              top: 200,
               right: 50,
-              bottom: 400,
+              bottom: role === 'customer' ? 400 : 150,
               left: 50,
             },
             animated: true,
@@ -584,7 +599,7 @@ const Map = () => {
     driverDestinationLatitude,
     driverOriginLongitude,
     driverOriginLatitude,
-    path,
+    mapRef
   ]);
 
 
@@ -637,7 +652,7 @@ const Map = () => {
             <>
               {destinationLatitude && destinationLongitude && (
                 <Marker
-                  key={`${destinationLatitude}-${destinationLongitude}-${rideStatus}-${Math.random()}`}
+                  key={`customer-destination-${destinationLatitude}-${destinationLongitude}-${rideStatus}`}
                   coordinate={{
                     latitude: destinationLatitude,
                     longitude: destinationLongitude
@@ -649,7 +664,7 @@ const Map = () => {
 
               {role !== 'customer' && driverDestinationLatitude && driverDestinationLongitude && path !== '/final-page' && (
                 <Marker
-                  key={`${driverDestinationLatitude}-${driverDestinationLongitude}-${rideStatus}`}
+                  key={`driver-destination-${driverDestinationLatitude}-${driverDestinationLongitude}-${rideStatus}`}
                   coordinate={{
                     latitude: driverDestinationLatitude,
                     longitude: driverDestinationLongitude
@@ -660,7 +675,7 @@ const Map = () => {
 
               {selectedDriverDetails?.userLatitude && selectedDriverDetails?.userLongitude && (
                 <Marker
-                  key={`${selectedDriverDetails.id}-${rideStatus}`}
+                  key={`selected-driver-${selectedDriverDetails.id}-${rideStatus}`}
                   coordinate={{
                     latitude: selectedDriverDetails.userLatitude!,
                     longitude: selectedDriverDetails.userLongitude!
@@ -673,10 +688,9 @@ const Map = () => {
                 />
               )}
 
-              {/* hahahahhz */}
               {userLatitude && userLongitude && destinationLatitude && destinationLongitude && (
                 <MapViewDirections
-                  key={`${selectedDriverDetails?.userLatitude}-${selectedDriverDetails?.userLongitude}-${rideStatus}-${userLatitude}-${userLongitude}-${destinationLatitude}-${destinationLongitude}`}
+                  key={`user-to-destination-${userLatitude}-${userLongitude}-${destinationLatitude}-${destinationLongitude}`}
                   origin={{
                     latitude: userLatitude,
                     longitude: userLongitude
@@ -694,7 +708,7 @@ const Map = () => {
 
               {destinationLatitude && destinationLongitude && selectedDriverDetails && rideStatus === 'Start' && (
                 <MapViewDirections
-                  key={`${selectedDriverDetails.id}-${rideStatus}-${destinationLatitude}-${destinationLongitude}`}
+                  key={`driver-to-destination-${selectedDriverDetails.id}-${rideStatus}`}
                   origin={{
                     latitude: selectedDriverDetails?.userLatitude!,
                     longitude: selectedDriverDetails?.userLongitude!
@@ -714,7 +728,7 @@ const Map = () => {
 
               {userLatitude && userLongitude && destinationLatitude && destinationLongitude && selectedDriverDetails && customerDestinationLatitude && customerDestinationLongitude && rideStatus && (
                 <MapViewDirections
-                  key={`${selectedDriverDetails.id}-${customerDestinationLatitude}-${customerDestinationLongitude}-${rideStatus}-${destinationLatitude}-${destinationLongitude}`}
+                  key={`driver-to-customer-destination-${selectedDriverDetails.id}-${rideStatus}`}
                   origin={{
                     latitude: selectedDriverDetails?.userLatitude!,
                     longitude: selectedDriverDetails?.userLongitude!
@@ -735,7 +749,7 @@ const Map = () => {
 
               {role !== 'customer' && driverOriginLatitude && driverOriginLongitude && driverDestinationLatitude && driverDestinationLongitude && (
                 <MapViewDirections
-                  key={`${driverOriginLatitude}-${driverDestinationLatitude}-${rideStatus}`}
+                  key={`driver-route-${rideStatus}`}
                   origin={{
                     latitude: driverOriginLatitude,
                     longitude: driverOriginLongitude
@@ -757,9 +771,9 @@ const Map = () => {
 
         {markers && markers.length > 0 && !selectedDriverDetails && (
           markers?.filter(marker => marker.userLatitude && marker.userLongitude)
-            .map((marker,index) => (
+            .map((marker, index) => (
               <Marker
-                key={`${marker.id}-${rideStatus}-${index}`}
+                key={`marker-${marker.id}-${Date.now()}-${Math.random()}`}
                 coordinate={{
                   latitude: marker.userLatitude!,
                   longitude: marker.userLongitude!

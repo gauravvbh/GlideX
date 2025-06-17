@@ -87,9 +87,6 @@ const RideCard = ({ ride }: { ride: RideData }) => {
         </View>
       </View>
     </TouchableOpacity>
-
-  
-
   )
 }
 

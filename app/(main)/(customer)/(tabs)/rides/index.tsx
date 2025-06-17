@@ -35,7 +35,7 @@ const ShowAllRides = () => {
   }, [user?.id]);
 
   return (
-    <SafeAreaView className="flex-1 bg-black px-5">
+    <SafeAreaView className="flex-1 bg-black px-5 mb-10">
       <Text className="text-white text-3xl font-bold mt-4 mb-6">Rides History</Text>
 
       <FlatList

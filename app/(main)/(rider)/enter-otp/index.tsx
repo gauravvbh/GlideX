@@ -3,6 +3,11 @@ import React, { useEffect, useState } from 'react';
 import CustomButton from '@/components/CustomButton';
 import { useRideOfferStore, useWSStore } from '@/store';
 import { router } from 'expo-router';
+import { OtpInput } from "react-native-otp-entry";
+import Constants from 'expo-constants';
+
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
+
 
 const EnterOtp = () => {
     const [riderOTP, setRiderOTP] = useState('');
@@ -21,7 +26,7 @@ const EnterOtp = () => {
 
         // Either create a new one or use existing one
         if (!ws) {
-            const newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com');
+            const newWs = new WebSocket(WEBSOCKET_API_URL);
 
             newWs.onopen = () => {
                 console.log('WebSocket connected');
@@ -62,7 +67,7 @@ const EnterOtp = () => {
             console.log(activeRideId)
             console.log(rideDetails)
             if (rideDetails) {
-                
+
                 changeStatus(rideDetails?.id, 'Start')
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({
@@ -90,14 +95,63 @@ const EnterOtp = () => {
                 Please enter the OTP provided by the customer to start the ride.
             </Text>
 
-            <TextInput
+            {/* <TextInput
                 value={riderOTP}
                 onChangeText={setRiderOTP}
                 keyboardType="number-pad"
                 maxLength={6}
                 className="w-full border border-gray-300 rounded-lg text-center py-3 text-lg tracking-widest mb-6"
                 placeholder="Enter OTP"
+            /> */}
+            <OtpInput
+                numberOfDigits={4}
+                onTextChange={setRiderOTP}
+                focusColor="black"
+                placeholder="*"
+                type="numeric"
+                theme={{
+                    containerStyle: {
+                        width: '100%',
+                        justifyContent: 'space-between',
+                        flexDirection: 'row',
+                        marginBottom: 24,
+                    },
+                    pinCodeContainerStyle: {
+                        borderWidth: 1,
+                        borderColor: '#D1D5DB', // Tailwind: border-gray-300
+                        borderRadius: 8,
+                        paddingVertical: 12,
+                        width: 60,
+                        height: 60,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    },
+                    pinCodeTextStyle: {
+                        fontSize: 18,
+                        textAlign: 'center',
+                        letterSpacing: 6,
+                    },
+                    focusStickStyle: {
+                        backgroundColor: 'black',
+                        width: 2,
+                        height: 24,
+                    },
+                    focusedPinCodeContainerStyle: {
+                        borderColor: 'black',
+                    },
+                    filledPinCodeContainerStyle: {
+                        borderColor: '#4B5563', // Tailwind: border-gray-600
+                    },
+                    disabledPinCodeContainerStyle: {
+                        backgroundColor: '#E5E7EB', // Tailwind: bg-gray-200
+                    },
+                    placeholderTextStyle: {
+                        color: '#9CA3AF', // Tailwind: text-gray-400
+                    },
+                }}
             />
+
+
 
             {
                 error && (

@@ -120,6 +120,8 @@ export default {
       FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
       FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+      RESEND_API_KEY: process.env.RESEND_API_KEY,
+      webSocketServerUrl: process.env.EXPO_PUBLIC_WEB_SOCKET_SERVER_URL,
     },
     owner: "gauravvbh",
     web: {

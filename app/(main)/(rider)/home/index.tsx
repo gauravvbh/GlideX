@@ -15,6 +15,8 @@ import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
 
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
+
 
 
 const RideHome = () => {
@@ -173,7 +175,7 @@ const RideHome = () => {
 
         let socket: WebSocket;
         if (!ws) {
-            const newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com');
+            const newWs = new WebSocket(WEBSOCKET_API_URL);
 
             newWs.onopen = () => {
                 newWs.send(JSON.stringify({
@@ -544,7 +546,6 @@ const RideHome = () => {
                 ) : (
                     <>
                         <RiderHeader hasPermissions={hasPermissions} todayEarnings={todayEarnings} />
-                        {/* <CustomButton title="Refresh Location" onPress={sendLocationToWebSocket} /> */}
 
                         {
                             isVerified ? (
@@ -553,7 +554,7 @@ const RideHome = () => {
                                     renderItem={({ item, index }) => (
                                         <RiderRidesItem removeIt={() => removeRide(item.id)} item={item} acceptRide={() => acceptRide(item.id)} />
                                     )}
-                                    keyExtractor={(item) => item?.id || Math.random().toString()}
+                                    keyExtractor={(item, index) => item?.id?.toString() || `fallback-key-${index}`}
                                     contentContainerStyle={{
                                         padding: 16,
                                         flexGrow: 1,

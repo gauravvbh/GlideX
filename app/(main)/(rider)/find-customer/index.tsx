@@ -9,6 +9,10 @@ import { useDriver, useRideOfferStore, useWSStore } from '@/store';
 import { useUser } from '@clerk/clerk-expo';
 import * as Location from 'expo-location';
 import { LocationObject } from 'expo-location';
+import Constants from 'expo-constants';
+
+const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
+
 
 const ReachCustomer = () => {
     const router = useRouter();
@@ -28,8 +32,9 @@ const ReachCustomer = () => {
 
         // Either create a new one or use existing one
         if (!ws) {
-            const newWs = new WebSocket('wss://websocket-server-for-glidex.onrender.com');
+            const newWs = new WebSocket(WEBSOCKET_API_URL);
 
+            
             newWs.onopen = () => {
                 console.log('WebSocket connected');
             };

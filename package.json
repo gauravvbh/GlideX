@@ -60,6 +60,7 @@
     "react-native-maps-directions": "^1.9.0",
     "react-native-maps-expo-plugin": "^1.0.4",
     "react-native-modal": "^14.0.0-rc.1",
+    "react-native-otp-entry": "^1.8.4",
     "react-native-paper": "^5.13.3",
     "react-native-progress": "^5.0.1",
     "react-native-ratings": "^8.1.0",
@@ -70,6 +71,7 @@
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
     "react-navigation": "^5.0.0",
+    "resend": "^4.6.0",
     "stripe": "^18.0.0",
     "tailwindcss": "3.4.17",
     "zustand": "^5.0.3"
