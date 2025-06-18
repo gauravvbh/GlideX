@@ -71,12 +71,8 @@ const ReachCustomer = () => {
             }
 
             if (message.type === 'customerDidNotVerify') {
-                if (activeRideId) {
-                    const rideDetails = giveRideDetails(activeRideId)
-                    removeRideOffer(rideDetails?.id!)
-                    // Trigger emergency alert UI
-                    setVerifyReachedStage('alert');
-                }
+                // Trigger emergency alert UI
+                setVerifyReachedStage('alert');
             }
         }
     }, [ws]);
@@ -204,8 +200,13 @@ const ReachCustomer = () => {
     };
 
     const handleCallCustomer = () => {
+        console.log('❤️')
+        console.log(activeRideId)
         if (activeRideId) {
             const rideDetails = giveRideDetails(activeRideId)
+
+            console.log('❤️')
+            console.log(rideDetails)
 
             const customerPhoneNumber = `+91${rideDetails?.customerDetails.number}`;
 
@@ -224,6 +225,16 @@ const ReachCustomer = () => {
             Alert.alert('Error', 'Unable to place call to support.');
         });
     };
+
+    const handleGoHome = () => {
+        setVerifyReached(false);
+        setVerifyReachedStage("waiting");
+        if (activeRideId) {
+            const rideDetails = giveRideDetails(activeRideId)
+            removeRideOffer(rideDetails?.id!)
+        }
+        router.replace('/(main)/(rider)/home');
+    }
 
 
 
@@ -309,11 +320,7 @@ const ReachCustomer = () => {
                                 bgVariant="secondary"
                                 textVariant="secondary"
                                 className="w-full"
-                                onPress={() => {
-                                    setVerifyReached(false);
-                                    setVerifyReachedStage("waiting");
-                                    router.replace('/(main)/(rider)/home');
-                                }}
+                                onPress={handleGoHome}
                             />
                         </>
                     )}

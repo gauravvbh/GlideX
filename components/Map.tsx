@@ -603,7 +603,17 @@ const Map = () => {
   ]);
 
 
-
+  function dedupeDriversById(drivers: PlainDriver[]): PlainDriver[] {
+    const seen = new Set<string>();
+    return drivers.filter(driver => {
+      if (!driver.id) return false;
+      if (seen.has(driver.id)) return false;
+      seen.add(driver.id);
+      return true;
+    });
+  }
+  
+  
 
 
 
@@ -770,22 +780,20 @@ const Map = () => {
 
 
         {markers && markers.length > 0 && !selectedDriverDetails && (
-          markers?.filter(marker => marker.userLatitude && marker.userLongitude)
-            .map((marker, index) => (
+          dedupeDriversById(markers)
+            .filter(m => m.userLatitude && m.userLongitude)
+            .map(m => (
               <Marker
-                key={`marker-${marker.id}-${Date.now()}-${Math.random()}`}
-                coordinate={{
-                  latitude: marker.userLatitude!,
-                  longitude: marker.userLongitude!
-                }}
+                key={`marker-${m.id}-${m.userLatitude}-${m.userLongitude}`}
+                coordinate={{ latitude: m.userLatitude, longitude: m.userLongitude }}
                 anchor={{ x: 0.5, y: 0.5 }}
-                title={marker.full_name!}
-                image={
-                  selectedDriverId === marker.id ? icons.selectedMarker : icons.marker
-                }
+                title={m.full_name}
+                image={selectedDriverId === m.id ? icons.selectedMarker : icons.marker}
               />
-            )) || []
+            ))
         )}
+
+
 
       </MapView>
 

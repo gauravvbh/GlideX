@@ -14,6 +14,7 @@ import RiderRidesItem from '@/components/RiderRidesItem'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
+import LottieView from 'lottie-react-native';
 
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
@@ -534,86 +535,103 @@ const RideHome = () => {
     };
 
     return (
-        <SafeAreaView className='flex-1'>
-            {
-                loading ? (
-                    <View className='flex-1 justify-center items-center gap-y-10'>
-                        <Text className='text-white font-JakartaSemiBold text-3xl mx-20 text-center'>
-                            Loading the rider details...
-                        </Text>
-                        <ActivityIndicator size={100} color='white' />
-                    </View>
-                ) : (
-                    <>
-                        <RiderHeader hasPermissions={hasPermissions} todayEarnings={todayEarnings} />
+        <SafeAreaView className="flex-1 bg-black">
+            {loading ? (
+                <View className="flex-1 justify-center items-center gap-y-10 px-8">
+                    <Text className="text-white font-JakartaSemiBold text-3xl text-center">
+                        Loading the rider details...
+                    </Text>
+                    <ActivityIndicator size={80} color="white" />
+                </View>
+            ) : (
+                <>
+                    <RiderHeader hasPermissions={hasPermissions} todayEarnings={todayEarnings} />
 
-                        {
-                            isVerified ? (
-                                <FlatList
-                                    data={!onDuty ? [] : rideOffer}
-                                    renderItem={({ item, index }) => (
-                                        <RiderRidesItem removeIt={() => removeRide(item.id)} item={item} acceptRide={() => acceptRide(item.id)} />
-                                    )}
-                                    keyExtractor={(item, index) => item?.id?.toString() || `fallback-key-${index}`}
-                                    contentContainerStyle={{
-                                        padding: 16,
-                                        flexGrow: 1,
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                                    }}
-                                    ListEmptyComponent={
-                                        <View className="flex-1 justify-center items-center">
-                                            {
-                                                onDuty ? (
-                                                    <Image
-                                                        source={require('@/assets/icons/ride.jpg')}
-                                                        className="w-40 h-40 mt-10 scale-x-[-1]"
-                                                        resizeMode='contain'
-                                                    />
-                                                ) : (
-                                                    <AntDesign name='poweroff' size={100} color='white' />
-                                                )
-                                            }
-                                            <Text className='text-center text-2xl my-10 mx-20 text-white'>
-                                                {onDuty ? "There are no available rides, stay active!!!" : "You're currently OFF duty please go ON duty to start earning"}
+                    {isVerified ? (
+                        <FlatList
+                            data={!onDuty ? [] : rideOffer}
+                            renderItem={({ item }) => (
+                                <RiderRidesItem
+                                    removeIt={() => removeRide(item.id)}
+                                    item={item}
+                                    acceptRide={() => acceptRide(item.id)}
+                                />
+                            )}
+                            keyExtractor={(item, index) =>
+                                item?.id?.toString() || `fallback-key-${index}`
+                            }
+                            contentContainerStyle={{
+                                padding: 16,
+                                flexGrow: 1,
+                                justifyContent: rideOffer.length === 0 ? "center" : "flex-start",
+                                alignItems: rideOffer.length === 0 ? "center" : "stretch",
+                            }}
+                            ListEmptyComponent={
+                                <View className="flex-1 justify-center items-center px-8">
+                                    {onDuty ? (
+                                        <View className="items-center justify-center mt-6">
+                                            <LottieView
+                                                source={require('@/assets/animations/no-rides.json')}
+                                                autoPlay
+                                                loop
+                                                style={{ width: 250, height: 250 }}
+                                            />
+                                            <Text className="text-white text-xl text-center font-JakartaSemiBold mt-6 px-10">
+                                                No rides available right now. Stay active!
                                             </Text>
-                                        </View>
-                                    }
-                                />
-                            ) : (
-                                <View className='flex-1 h-full justify-center items-center'>
-                                    <Text className="text-xl font-JakartaBold text-center mb-3 text-white">
-                                        Verification Required
+                                    </View>
+                                    ) : (
+                                        <AntDesign name="poweroff" size={100} color="white" />
+                                    )}
+                                    <Text className="text-white text-xl font-JakartaMedium text-center mt-8 leading-7">
+                                        {onDuty
+                                            ? "There are no available rides. Stay active!"
+                                            : "You're currently OFF duty.\nSwitch to ON duty to start earning."}
                                     </Text>
-                                    <Text className="text-gray-500 font-JakartaLight text-center mb-5">
-                                        Please verify your details to start earning.
-                                    </Text>
-                                    <CustomButton title="Verify Now" className='w-4/6' onPress={handleStartVerification} />
                                 </View>
-                            )
-                        }
-                        <ReactNativeModal isVisible={showVerifyModal}>
-                            <View className="bg-white p-5 rounded-lg items-center">
-                                <Text className="text-xl font-JakartaBold text-center mb-3 text-black">
-                                    Verification Required
-                                </Text>
-                                <Text className="text-gray-700 font-JakartaLight text-center mb-5">
-                                    Please verify your details to start earning.
-                                </Text>
-                                <CustomButton title="Verify Now" className='w-4/6' onPress={handleStartVerification} />
-                                <CustomButton
-                                    title="Later"
-                                    className="mt-3 bg-gray-300 w-1/3"
-                                    onPress={handleDismissModal}
-                                />
-                            </View>
-                        </ReactNativeModal>
-                    </>
-                )
-            }
-        </SafeAreaView>
+                            }
+                        />
+                    ) : (
+                        <View className="flex-1 justify-center items-center px-8">
+                            <Text className="text-white text-2xl font-JakartaBold text-center mb-4">
+                                Verification Required
+                            </Text>
+                            <Text className="text-gray-400 font-JakartaLight text-center mb-6">
+                                Please verify your details to start earning.
+                            </Text>
+                            <CustomButton
+                                title="Verify Now"
+                                className="w-4/6"
+                                onPress={handleStartVerification}
+                            />
+                        </View>
+                    )}
 
-    )
+                    {/* Modal */}
+                    <ReactNativeModal isVisible={showVerifyModal}>
+                        <View className="bg-white p-6 rounded-2xl items-center">
+                            <Text className="text-xl font-JakartaBold text-black text-center mb-3">
+                                Verification Required
+                            </Text>
+                            <Text className="text-gray-700 font-JakartaLight text-center mb-5">
+                                Please verify your details to start earning.
+                            </Text>
+                            <CustomButton
+                                title="Verify Now"
+                                className="w-full"
+                                onPress={handleStartVerification}
+                            />
+                            <CustomButton
+                                title="Later"
+                                className="mt-4 bg-gray-300 w-1/2"
+                                onPress={handleDismissModal}
+                            />
+                        </View>
+                    </ReactNativeModal>
+                </>
+            )}
+        </SafeAreaView>
+    );    
 }
 
 export default RideHome

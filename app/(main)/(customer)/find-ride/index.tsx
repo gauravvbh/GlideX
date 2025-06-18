@@ -24,7 +24,7 @@ const FindRidePage = () => {
     const router = useRouter();
 
     return (
-        <RideLayout title='Ride'>
+        <RideLayout title='Ride' disabled={false}>
             <View className=''>
                 <Text className='text-lg font-JakartaSemiBold mb-3'>From</Text>
                 <GoogleTextInput
@@ -56,6 +56,7 @@ const FindRidePage = () => {
                 title='Find now'
                 onPress={() => router.push('/(main)/book-ride' as never)}
                 className='mt-5 w-full'
+                disabled={userAddress?.length!>0?false:true}
             />
         </RideLayout>
     )

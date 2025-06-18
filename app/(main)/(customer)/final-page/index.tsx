@@ -200,7 +200,7 @@ const FinalPage = () => {
             };
         }
     }, [verifyReached]);
-    
+
 
 
 
@@ -277,7 +277,7 @@ const FinalPage = () => {
             merchantIdentifier="merchant.uber.com"
             urlScheme="myapp"
         >
-            <RideLayout title='final page'>
+            <RideLayout title='final page' disabled={(page === 'Loading' || page === 'OnWay' || page === 'Start') ? true : false}>
                 {page === 'OnWay' && <OnWay number={selectedDriverDetails?.number!} />}
                 {page === 'Start' && <Start number={selectedDriverDetails?.number!} otp={otp} />}
                 {page === 'Middle' && <Middle number={selectedDriverDetails?.number!} />}

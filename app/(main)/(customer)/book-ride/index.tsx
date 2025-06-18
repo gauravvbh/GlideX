@@ -30,7 +30,7 @@ const BookRidePage = () => {
 
 
     return (
-        <RideLayout title='Choose a Driver'>
+        <RideLayout title='Choose a Driver' disabled={false}>
             <FlatList
                 data={driversWLocations}
                 // data={drivers}

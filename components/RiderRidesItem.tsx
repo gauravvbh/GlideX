@@ -49,7 +49,7 @@ const RiderRidesItem = ({ item, removeIt, acceptRide }: { item: RideOfferDetails
                     <Text className="text-[22px] font-bold text-[#111]">Car</Text>
                 </View>
                 <Text className="text-base text-gray-500 font-medium">
-                    #{item?.id?.slice(0, 7).toUpperCase() ?? 'RID12345'}
+                    #{item?.id?.slice(0, 10).toUpperCase() ?? 'RID12345'}
                 </Text>
             </View>
 

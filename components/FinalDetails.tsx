@@ -20,6 +20,9 @@ const FinalDetails = ({ paid, setPaid, page }: { paid: boolean; setPaid: (value:
 
     const { user } = useUser();
 
+    console.log('⚠️')
+    console.log(page)
+
 
 
     return (
@@ -49,7 +52,7 @@ const FinalDetails = ({ paid, setPaid, page }: { paid: boolean; setPaid: (value:
                     </View>
                     <Text className='my-auto text-xl font-JakartaBold'>${selectedDriverDetails?.price || '_ _'}</Text>
                 </View>
-                {page !== 'Error' && (
+                {page !== 'Error' && page !== 'Loading' && (
                     <View>
                         {paid ? (
                             <View className='bg-green-50 p-4 mt-5 rounded-md'>

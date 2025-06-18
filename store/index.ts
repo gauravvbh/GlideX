@@ -209,7 +209,7 @@ export const useDriverStore = create<DriverStore>((set, get) => ({
             drivers
         }));
     },
-    
+
     updateDriverLocation: (driverId, latitude, longitude, address) => {
         set((state) => {
             const existingDriver = state.nearbyDrivers.find(driver => driver.id === driverId);
@@ -249,7 +249,7 @@ export const useDriverStore = create<DriverStore>((set, get) => ({
             return {};
         });
     }
-      ,
+    ,
 
 
     updateSelectedDriverLocation: (latitude: number, longitude: number, address: string) => {
@@ -342,6 +342,7 @@ export const useDriver = create<Driver>((set) => ({
     car_image_url: null,
     car_seats: null,
     time: null,
+    email: null,
     price: null,
     setCarImageURL: ({ car_image_url }: { car_image_url: string }) => {
         set(() => ({
@@ -391,6 +392,7 @@ export const useCustomer = create<Customer>((set) => ({
     full_name: null,
     userLatitude: null,
     userLongitude: null,
+    email: null,
     userAddress: null,
     destinationAddress: null,
     destinationLatitude: null,

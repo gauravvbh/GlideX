@@ -74,9 +74,9 @@ const ConfirmRidePage = () => {
 
 
     function generateRideId(): string {
-        const timestamp = Date.now().toString(36); // base36 timestamp
+        // const timestamp = Date.now().toString(36); // base36 timestamp
         const random = Math.random().toString(36).substring(2, 6); // 4-char random string
-        return `ride_${timestamp}${random}`;
+        return `ride_${random}`;
     }
 
 
@@ -141,7 +141,7 @@ const ConfirmRidePage = () => {
 
 
     return (
-        <RideLayout title="Book Ride">
+        <RideLayout title="Book Ride" disabled={false}>
             <>
                 <Text className="text-xl font-JakartaSemiBold mb-3">
                     Ride Information
@@ -158,11 +158,12 @@ const ConfirmRidePage = () => {
                     }
 
 
-                    <View className="flex flex-row items-center justify-center mt-5 space-x-2">
+                    <View className="mt-5">
                         <Text className="text-lg font-JakartaSemiBold">
                             {selectedDriverDetails?.full_name}
                         </Text>
-
+                    </View>
+                    <View className="mt-1">
                         <View className="flex flex-row items-center space-x-0.5">
                             <Image
                                 source={icons.star}
@@ -220,7 +221,7 @@ const ConfirmRidePage = () => {
                     title="Confirm Ride"
                     onPress={() => {
                         handleOfferRide();
-                        router.push('/(main)/(customer)/final-page' as never)
+                        router.replace('/(main)/(customer)/final-page' as never)
                     }}
                     className="mt-10 w-full"
                 />

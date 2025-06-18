@@ -74,7 +74,8 @@
     "resend": "^4.6.0",
     "stripe": "^18.0.0",
     "tailwindcss": "3.4.17",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "lottie-react-native": "7.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
