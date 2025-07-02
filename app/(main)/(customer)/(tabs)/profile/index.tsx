@@ -1,10 +1,29 @@
 import { useUser } from "@clerk/clerk-expo";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Image, RefreshControl, ScrollView, Text, View } from "react-native";
 import InputField from "@/components/InputField";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
 
 const Profile = () => {
   const { user } = useUser();
+
+  console.log(user)
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [_, forceUpdate] = useState(0);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await user?.reload();
+      forceUpdate(n => n + 1); // This will force a re-render
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+    }
+    setRefreshing(false);
+  };
+
+
 
   return (
     <SafeAreaView className="flex-1 bg-bgColor">
@@ -12,6 +31,14 @@ const Profile = () => {
         className="px-5"
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#000000']} // Android spinner color
+            tintColor="#000"      // iOS spinner color
+          />
+        }
       >
         <Text className="text-2xl text-primaryTextColor font-JakartaBold mt-5 mb-6">
           My Profile

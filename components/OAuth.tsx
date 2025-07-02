@@ -57,9 +57,17 @@ const OAuth = () => {
                 // Use the `signIn` or `signUp` returned from `startSSOFlow`
                 // to handle next steps
                 console.error("No session or setActive is undefined");
+
+                Alert.alert("Authentication incomplete", "Redirecting you back.");
+                router.replace("/(auth)/sign-in"); // 👈 Your fallback or safe page
             }
-        } catch (err) {
-            console.error("❌ Google Sign-in Error:", err);
+        } catch (err: any) {
+            if (err.type === 'cancel' || err.type === 'dismiss') {
+                Alert.alert("Sign-in cancelled", "You closed the sign-in flow before completion.");
+            } else {
+                console.error("❌ Google Sign-in Error:", err);
+                Alert.alert("Sign-in error", "Something went wrong during authentication.");
+            }
         } finally {
             setLoading(false)
         }

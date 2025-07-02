@@ -52,7 +52,7 @@ const FinalDetails = ({ paid, setPaid, page, number }: { paid: boolean; setPaid:
                         <Text className="text-sm text-neutral-500">Call your driver</Text>
                     </View>
                     <TouchableOpacity
-                        onPress={() => Linking.openURL(`tel:${number}`)}
+                        onPress={() => Linking.openURL(`tel:+91${number}`)}
                         className="bg-black px-4 py-2 rounded-full"
                     >
                         <Text className="text-white font-JakartaSemiBold text-base">Call</Text>

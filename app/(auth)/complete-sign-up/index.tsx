@@ -1,6 +1,6 @@
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { Feather } from '@expo/vector-icons';
-import { Redirect } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import React, { useState } from 'react';
 import {
     View,
@@ -9,11 +9,26 @@ import {
     TouchableOpacity,
     Modal,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Image,
+    Platform
 } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
+import { images } from '@/constants/data';
+import CustomButton from '@/components/CustomButton';
+
+let LottieView: any = () => null;
+
+if (Platform.OS !== 'web') {
+    try {
+        LottieView = require('lottie-react-native').default;
+    } catch (err) {
+        console.warn('LottieView native import failed:', err);
+        LottieView = () => null;
+    }
+}
 
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
@@ -26,11 +41,18 @@ const RegisterScreen: React.FC = () => {
     const [error, setError] = useState<string>('');
     const [otpModalVisible, setOtpModalVisible] = useState<boolean>(false);
     const [otpValue, setOtpValue] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false)
+    const [constOtpValue, setConstOtpValue] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false)
 
     const { user } = useUser();
     const { isLoaded, isSignedIn } = useAuth();
 
+
+    const generateOtp = () => {
+        const randomOtp = Math.floor(1000 + Math.random() * 9000);
+        return randomOtp.toString();
+    };
 
     const handleContinue = async () => {
         setLoading(true)
@@ -62,7 +84,21 @@ const RegisterScreen: React.FC = () => {
             } else {
                 setOtpModalVisible(true);
 
+
+                const generatedOTP = generateOtp();
+                setConstOtpValue(generatedOTP)
+                console.log(generateOtp)
                 //send otp to user
+
+                fetch("https://utils-server-for-glidex.onrender.com/api/send-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        to: user?.primaryEmailAddress?.emailAddress,
+                        subject: 'Verification for GlideX Account',
+                        html: `OTP:- ${generatedOTP} will be used to verify the GlideX account.`,
+                    })
+                }).catch(err => console.log("❌ Email send error", err));
             }
         } catch (err: any) {
             setError(err.message);
@@ -71,29 +107,87 @@ const RegisterScreen: React.FC = () => {
         }
     };
 
-    const handleOTPSubmit = () => {
-        Alert.alert('OTP Submitted', `Code entered: ${otpValue}`);
-        setOtpModalVisible(false);
+    const handleOTPSubmit = async () => {
+        setError('')
 
+        if (otpValue !== constOtpValue) {
+            setError('Otp Entered Wrong')
+            return;
+        }
 
+        setLoading(true)
         //clerk-role
 
-        //const safeRole=role==='Customer'?'customer:'rider
-        // await fetch('https://your-api.com/check-phone', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ number, role:safeRole }),
-        // });
+        try {
+            const safeRole = role === 'Customer' ? 'customer' : 'rider';
+            const fullName = `${user?.firstName} ${user?.lastName}`
+
+            const result = await fetch(`${API_URL}/api/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: fullName,
+                    email: user?.primaryEmailAddress?.emailAddress,
+                    phone: number,
+                    clerk_id: user?.id,
+                    role: safeRole
+                })
+            });
+
+            setOtpModalVisible(false);
+            setShowSuccessModal(true)
+        } catch (error: any) {
+            console.log(error);
+            setError(error.message ?? "/api/register failed")
+        } finally {
+            setLoading(false)
+        }
     };
+
+    const handleResendPhoneOTP = async () => {
+        const generatedOTP = generateOtp();
+        setConstOtpValue(generatedOTP)
+        console.log(generateOtp)
+        //send otp to user
+
+        fetch("https://utils-server-for-glidex.onrender.com/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                to: user?.primaryEmailAddress?.emailAddress,
+                subject: 'Verification for GlideX Account',
+                html: `OTP:- ${generatedOTP} will be used to verify the GlideX account.`,
+            })
+        }).catch(err => console.log("❌ Email send error", err));
+    }
+
+    const handleBrowseHome = () => {
+        if (role === 'Customer') {
+            router.replace('/(main)/(customer)/(tabs)/home')
+        }
+        if (role === 'Rider') {
+            router.replace('/(main)/(rider)/home')
+        }
+    }
+
+    if (!user || !isLoaded) {
+        return (
+            <SafeAreaView className="flex-1 bg-neutral-900 justify-center items-center px-6">
+                <LottieView
+                    source={require('@/assets/animations/loading.json')}
+                    autoPlay
+                    loop
+                    style={{ width: 300, height: 300 }}
+                />
+            </SafeAreaView>
+        );
+    }
+
 
     if (user && Object.keys(user.publicMetadata).length !== 0) {
         return <Redirect href={`/(main)/${user?.publicMetadata.role === 'customer' ? '(customer)' : '(rider)'}/(tabs)/home`} />
-    }
-
-    if (!isLoaded) {
-        return <ActivityIndicator size='large' color='black' />; // or loading page
     }
 
 
@@ -171,8 +265,13 @@ const RegisterScreen: React.FC = () => {
                             Enter OTP
                         </Text>
 
+                        <Text className='text-red-500 font-Jakarta mb-5 text-center'>
+                            [DEVELOPMENT] We've sent the verification code for {number} to {user?.primaryEmailAddress?.emailAddress}
+                        </Text>
+
+
                         <OtpInput
-                            numberOfDigits={6}
+                            numberOfDigits={4}
                             autoFocus
                             focusColor="black"
                             placeholder="*"
@@ -183,7 +282,7 @@ const RegisterScreen: React.FC = () => {
                                     width: '100%',
                                     justifyContent: 'space-between',
                                     flexDirection: 'row',
-                                    marginBottom: 24,
+                                    marginBottom: 14,
                                 },
                                 pinCodeContainerStyle: {
                                     borderWidth: 1,
@@ -211,14 +310,44 @@ const RegisterScreen: React.FC = () => {
                             }}
                         />
 
+                        {error && (
+                            <Text className="text-red-500 mt-1 text-center">{error}</Text>
+                        )}
+
+                        <TouchableOpacity
+                            className='py-2'
+                            onPress={handleResendPhoneOTP}
+                        >
+                            <Text className='text-blue-400 mb-3'>Resend OTP</Text>
+                        </TouchableOpacity>
+
                         <TouchableOpacity
                             onPress={handleOTPSubmit}
                             className="mt-3 bg-black py-3 rounded-xl"
                         >
-                            <Text className="text-white text-center font-JakartaBold">
+                            <Text className={`text-white text-center font-JakartaBold ${loading && 'opacity-60'}`} >
                                 Verify
                             </Text>
                         </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* success modal */}
+            <Modal visible={showSuccessModal} transparent animationType="fade">
+                <View className="flex-1 justify-center items-center bg-black/70 px-6">
+                    <View className='bg-black border border-neutral-700 px-7 py-9 rounded-2xl w-full min-h-[300px]'>
+                        <Image source={images.check} className='w-[110px] h-[110px] mx-auto my-5' />
+                        <Text className='text-3xl font-JakartaBold text-center'>Verified</Text>
+                        <Text className='text-base text-gray-400 font-Jakarta text-center mt-2'>
+                            You have successfully verified your account.
+                        </Text>
+                        <CustomButton
+                            title='Browse Home'
+                            onPress={handleBrowseHome}
+                            disabled={loading}
+                            className={`mt-5 ${loading && 'opacity-60'}`}
+                        />
                     </View>
                 </View>
             </Modal>

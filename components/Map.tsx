@@ -615,7 +615,6 @@ const Map = () => {
   }
 
 
-
   if (loading || (!longitude && !latitude)) {
     return (
       <View className="flex justify-center items-center w-full h-full">

@@ -14,6 +14,7 @@ import RiderRidesItem from '@/components/RiderRidesItem'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
+import { RefreshControl } from 'react-native'
 // import LottieView from 'lottie-react-native';
 
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
@@ -42,6 +43,8 @@ const RideHome = () => {
     const locationUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
     const [todayEarnings, setTodayEarnings] = useState('')
+    const [refreshing, setRefreshing] = useState(false);
+    const [_, forceUpdate] = useState(0);
 
 
 
@@ -98,6 +101,7 @@ const RideHome = () => {
     const sendLocationToWebSocket = async () => {
 
         if (isVerified && onDuty) {
+            console.log('Sending location to all customers')
             if (ws && ws.readyState === WebSocket.OPEN) {
                 let location = await Location.getCurrentPositionAsync();
                 const address = await Location.reverseGeocodeAsync({
@@ -119,6 +123,17 @@ const RideHome = () => {
         }
     };
 
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        try {
+            sendLocationToWebSocket();
+            forceUpdate(n => n + 1);
+        } catch (error) {
+            console.error("Failed to refresh user:", error);
+        }
+        setRefreshing(false);
+    };
 
 
     useEffect(() => {
@@ -150,7 +165,6 @@ const RideHome = () => {
     }, [onDuty])
 
 
-    console.log(onDuty)
     //delete
     const removeRide = (id: string) => {
 
@@ -608,6 +622,14 @@ const RideHome = () => {
                                             : "You're currently OFF duty.\nSwitch to ON duty to start earning."}
                                     </Text>
                                 </View>
+                            }
+                            refreshControl={
+                                onDuty ? <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={onRefresh}
+                                    colors={['#000000']} // Android
+                                    tintColor="#000"     // iOS
+                                /> : undefined
                             }
                         />
                     ) : (

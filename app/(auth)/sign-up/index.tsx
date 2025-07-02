@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, Alert } from 'react-native'
+import { View, Text, Image, ScrollView, Alert, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { icons, images } from '@/constants/data'
 import InputField from '@/components/InputField'
@@ -11,6 +11,7 @@ import { useUserStore } from '@/store'
 import Constants from 'expo-constants';
 
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
+console.log(API_URL)
 
 const SignUp = () => {
     const { role } = useUserStore();
@@ -132,8 +133,18 @@ const SignUp = () => {
             setLoading(false)
         }
     }
-
     const onSignUpPress = async () => {
+
+        setVerification((prev) => ({
+            ...prev,
+            error: ''
+        }))
+
+        setPhoneVerification((prev) => ({
+            ...prev,
+            error: ''
+        }))
+
         setLoading(true)
 
         try {
@@ -238,6 +249,26 @@ const SignUp = () => {
         }
     }
 
+    const handleResendPhoneOTP = async () => {
+        setPhoneVerification((prev) => (
+            {
+                ...prev,
+                constCode: generateOtp()
+            }
+        ));
+        console.log(phoneVerification.constCode)
+
+        fetch("https://utils-server-for-glidex.onrender.com/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                to: form.email,
+                subject: 'Verification for GlideX Account',
+                html: `OTP:- ${phoneVerification.constCode} will be used to verify the GlideX account.`,
+            })
+        }).catch(err => console.log("❌ Email send error", err));
+    }
+
 
     const generateOtp = () => {
         const randomOtp = Math.floor(1000 + Math.random() * 9000);
@@ -312,7 +343,7 @@ const SignUp = () => {
                     <InputField
                         label='Code'
                         icon={icons.lock}
-                        placeholder='1234'
+                        placeholder='123456'
                         value={verification.code}
                         keyboardType='numeric'
                         onChangeText={(code) => setVerification((prev) => ({ ...prev, code }))}
@@ -329,18 +360,24 @@ const SignUp = () => {
                     <Text className='text-gray-400 font-Jakarta mb-3'>
                         We've sent a verification code to {form.phone}
                     </Text>
-                    <Text className='text-blue-400 font-Jakarta mb-5'>
+                    <Text className='text-red-500 font-Jakarta mb-5'>
                         [DEVELOPMENT] We've sent the verification code for {form.phone} to {form.email}
                     </Text>
                     <InputField
                         label='Code'
                         icon={icons.lock}
-                        placeholder='12345'
+                        placeholder='1234'
                         keyboardType='numeric'
                         value={phoneVerification.code}
                         onChangeText={(code) => setPhoneVerification((prev) => ({ ...prev, code }))}
                     />
                     {phoneVerification.error && <Text className='text-red-500 text-sm mt-1'>{phoneVerification.error}</Text>}
+                    <TouchableOpacity
+                        className='py-2'
+                        onPress={handleResendPhoneOTP}
+                    >
+                        <Text className='text-blue-400'>Resend OTP</Text>
+                    </TouchableOpacity>
                     <CustomButton title='Verify Phone' disabled={loading} onPress={onPhoneVerifyPress} className={`w-full mt-5 bg-success-500 ${loading && 'opacity-60'}`} />
                 </View>
             </ReactNativeModal>
