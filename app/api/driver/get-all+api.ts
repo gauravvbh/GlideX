@@ -31,6 +31,6 @@ export async function GET() {
 
     } catch (error: any) {
         console.error("Error getting all drivers data:", error);
-        return Response.json({ error: error?.message || "Internal Server Error" }, { status: 500 });
+        return Response.json({ error: error || "Internal Server Error" }, { status: 500 });
     }
 }

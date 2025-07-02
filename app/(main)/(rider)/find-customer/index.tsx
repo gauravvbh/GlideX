@@ -1,6 +1,6 @@
 // ReachCustomer.tsx
 
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import SlideButton from '@/components/SlideButton';
@@ -10,6 +10,9 @@ import { useUser } from '@clerk/clerk-expo';
 import * as Location from 'expo-location';
 import { LocationObject } from 'expo-location';
 import Constants from 'expo-constants';
+import { Ionicons } from '@expo/vector-icons';
+import RideLayout from '@/components/RideLayout';
+import { icons } from '@/constants/data';
 
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
@@ -34,7 +37,7 @@ const ReachCustomer = () => {
         if (!ws) {
             const newWs = new WebSocket(WEBSOCKET_API_URL);
 
-            
+
             newWs.onopen = () => {
                 console.log('WebSocket connected');
             };
@@ -170,21 +173,75 @@ const ReachCustomer = () => {
         router.replace('/(main)/(rider)/enter-otp');
     };
 
+    const rideDetails = giveRideDetails(activeRideId!);
+    const customerName = rideDetails?.customerDetails.full_name || 'Customer';
+    const customerPhone = rideDetails?.customerDetails.number || '';
+    const pickupAddress = rideDetails?.pickupDetails.pickupAddress || 'Pickup location';
+    const destinationAddress = rideDetails?.dropoffDetails.dropoffAddress || 'Destination not set';
+
+
+    const callCustomer = () => {
+        if (customerPhone) {
+            Linking.openURL(`tel:${customerPhone}`);
+        } else {
+            alert('Phone number not available');
+        }
+    };
+
 
     return (
-        <View className='flex-1'>
-            <View className='h-2/3'>
-                <Map />
-            </View>
-            <View className='flex-1 justify-center items-center px-6 bg-white'>
-                <View className="flex-1 justify-center items-center px-6 bg-white">
-                    <Text className="text-2xl font-bold mb-4 text-black">
-                        Reach the Customer's Location
-                    </Text>
-                    <Text className="text-center text-gray-600 mb-10">
-                        Slide the button below once you’ve arrived at the pickup point.
-                    </Text>
+        <RideLayout disabled={true} title="">
+            <View className="justify-between bg-white">
+                {/* Heading */}
+                <View>
+                    <Text className="text-xl font-JakartaBold mb-6 text-black">Ride Details</Text>
 
+                    {/* Pickup Location */}
+                    <View className="flex-row items-start mb-4">
+                        <Image
+                            source={icons.origin}
+                            className="h-6 w-6 mt-1"
+                            resizeMode="contain"
+                        />
+                        <Text className="ml-3 text-base text-black flex-1 leading-6">
+                            {pickupAddress}
+                        </Text>
+                    </View>
+
+                    {/* Destination */}
+                    <View className="flex-row items-start">
+                        <Image
+                            source={icons.destination}
+                            className="h-6 w-6 mt-1"
+                            resizeMode="contain"
+                        />
+                        <Text className="ml-3 text-base text-black flex-1 leading-6">
+                            {destinationAddress}
+                        </Text>
+                    </View>
+                </View>
+
+                {/* Call Customer */}
+                {customerPhone && (
+                    <View className="mt-8 flex-row items-center justify-between bg-neutral-100 p-4 rounded-lg border border-neutral-300">
+                        <View>
+                            <Text className="text-base font-JakartaMedium text-neutral-700">Need Help?</Text>
+                            <Text className="text-sm text-neutral-500">Call the customer</Text>
+                        </View>
+                        <TouchableOpacity
+                            onPress={callCustomer}
+                            className="bg-black px-4 py-2 rounded-full"
+                        >
+                            <Text className="text-white font-JakartaSemiBold text-base">Call</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+                {/* Slide Button */}
+                <View className="mt-10">
+                    <Text className="text-center text-neutral-600 text-sm mb-3">
+                        Slide to confirm once you've reached the pickup location
+                    </Text>
                     <SlideButton
                         title="Slide to Confirm Arrival"
                         onComplete={handleSlideComplete}
@@ -193,7 +250,7 @@ const ReachCustomer = () => {
                     />
                 </View>
             </View>
-        </View>
+        </RideLayout>
     );
 };
 

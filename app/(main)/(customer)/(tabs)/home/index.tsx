@@ -136,7 +136,7 @@ const HomePage = () => {
         const getAllRides = async () => {
             setLoading(true)
             try {
-                const url = `${API_URL}/ride/get-all?clerk_id=${user.id}`;
+                const url = `${API_URL}/api/ride/get-all?clerk_id=${user.id}`;
 
 
                 const response = await fetch(url, {
@@ -165,6 +165,8 @@ const HomePage = () => {
                 keyExtractor={(item, index) => item?.ride_id?.toString() || `fallback-key-${index}`}
                 renderItem={({ item }) => <RideCard ride={item} />}
                 className='px-5'
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
                 keyboardShouldPersistTaps='handled'
                 contentContainerStyle={{ paddingBottom: 100 }}
                 ListEmptyComponent={() => (

@@ -141,6 +141,8 @@ const GoogleTextInput = ({
                     )}
                     className="mt-2 max-h-60 rounded-xl bg-white"
                     keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
                 />
             )}
         </KeyboardAvoidingView>

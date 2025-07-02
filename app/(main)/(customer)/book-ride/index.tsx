@@ -37,6 +37,8 @@ const BookRidePage = () => {
                 renderItem={({ item }) => (
                     <DriverCard item={item} selected={selectedDriverId ?? ''} setSelected={() => setSelectedDriverId(item.id!)} />
                 )}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
                 ListFooterComponent={() => (
                     <View className='mx-5 mt-10'>
                         <CustomButton

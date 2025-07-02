@@ -53,7 +53,7 @@ const RiderRidesItem = ({ item, removeIt, acceptRide }: { item: RideOfferDetails
                 </Text>
             </View>
 
-            {/* Pickup & Drop */}
+            {/* Pickup & Dropoff */}
             <View className="mt-6">
                 {/* Pickup */}
                 <View className="flex-row gap-x-3 mb-4">
@@ -66,24 +66,35 @@ const RiderRidesItem = ({ item, removeIt, acceptRide }: { item: RideOfferDetails
                     </View>
                 </View>
 
-                {/* Drop */}
-                <View className="flex-row gap-x-3 ">
+                {/* Dropoff */}
+                <View className="flex-row gap-x-3">
                     <View className="w-3 h-3 rounded-full bg-red-500 mt-2" />
                     <View>
                         <Text className="text-lg font-semibold text-[#111] font-JakartaBold">{item.dropoffDetails.dropoff}</Text>
-                        <Text className="text-sm text-gray-500 mt-1  font-JakartaMedium">
+                        <Text className="text-sm text-gray-500 mt-1 font-JakartaMedium">
                             {item.dropoffDetails.dropoffAddress ?? 'Dropoff address'}
                         </Text>
                     </View>
                 </View>
             </View>
 
+            {/* Customer Details */}
             <View className="justify-between mt-7">
-                <Text className='font-JakartaSemiBold'>Customer Details:</Text>
-                <View className='border border-gray-400 p-2 mt-3 rounded-xl'>
+                <Text className="font-JakartaSemiBold">Customer Details:</Text>
+                <View className="border border-gray-400 p-2 mt-3 rounded-xl">
                     <Text>Name: {item.customerDetails.full_name}</Text>
                     <Text>Email: {item.customerDetails.email}</Text>
                     <Text>Number: {item.customerDetails.number}</Text>
+                </View>
+            </View>
+
+            {/* Ride Info */}
+            <View className="mt-6">
+                <Text className="font-JakartaSemiBold">Ride Information:</Text>
+                <View className="border border-gray-400 p-2 mt-3 rounded-xl">
+                    <Text>Duration: {item.duration}</Text>
+                    <Text>Fare: ${item.fare}</Text>
+                    <Text>Status: {item.status}</Text>
                 </View>
             </View>
 
@@ -92,23 +103,21 @@ const RiderRidesItem = ({ item, removeIt, acceptRide }: { item: RideOfferDetails
                 <View className="flex-row space-x-7">
                     <View>
                         <Text className="text-base text-gray-500">Pickup</Text>
-                        <Text className="text-lg font-bold text-[#111]">{item.pickupDetails.pickupDistance}</Text>
+                        <Text className="text-lg font-bold text-[#111]">{item.pickupDetails.pickupDistance} km</Text>
                     </View>
                 </View>
 
-                <View className='flex-row gap-3 items-center justify-center'>
-                    <View className='bg-red-600 rounded-full p-2'>
-                        <TouchableOpacity
-                            onPress={() => removeIt(item.id)}
-                        >
-                            <AntDesign name='close' size={25} color='white' />
+                <View className="flex-row gap-3 items-center justify-center">
+                    <View className="bg-red-600 rounded-full p-2">
+                        <TouchableOpacity onPress={() => removeIt(item.id)}>
+                            <AntDesign name="close" size={25} color="white" />
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity
                         onPress={() => acceptRide(item.id)}
                         className="bg-yellow-400 px-7 py-2.5 rounded-full flex-row items-center space-x-2.5"
                     >
-                        <View className='flex-row gap-x-2'>
+                        <View className="flex-row gap-x-2">
                             <Text className="font-bold text-lg text-[#111]">Accept</Text>
                             <View className="bg-white rounded-full w-7 h-7 items-center justify-center">
                                 <Text className="font-bold text-sm">{timer}</Text>

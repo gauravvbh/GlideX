@@ -1,13 +1,13 @@
 import { useUser } from "@clerk/clerk-expo";
 import { router } from "expo-router";
-import { Alert, Image, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Text, View } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import * as WebBrowser from 'expo-web-browser'
 import * as AuthSession from 'expo-auth-session'
 import { useSSO } from '@clerk/clerk-expo'
 import { icons } from "@/constants/data";
 // import { googleOAuth } from "@/lib/auth";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 
 export const useWarmUpBrowser = () => {
@@ -24,30 +24,44 @@ export const useWarmUpBrowser = () => {
 
 // Handle any pending authentication sessions
 WebBrowser.maybeCompleteAuthSession()
-WebBrowser.maybeCompleteAuthSession()
 
-const OAuth = ({ role }: { role?: string }) => {
+const OAuth = () => {
     useWarmUpBrowser()
     // const { setUser } = useUserStore();
 
     // Use the `useSSO()` hook to access the `startSSOFlow()` method
     const { startSSOFlow } = useSSO()
 
+    const [loading, setLoading] = useState<boolean>(false)
+
     const handleGoogleSignIn = useCallback(async () => {
+        setLoading(true)
         try {
-            const { createdSessionId, setActive } = await startSSOFlow({
-                strategy: 'oauth_google',
-                redirectUrl: AuthSession.makeRedirectUri({ scheme: 'myapp', path: '/(auth)/verify-phone' }),
+            const redirectUri = AuthSession.makeRedirectUri({
+                scheme: 'myapp',
+                path: '/(auth)/complete-sign-up'
             });
 
-            if (setActive && createdSessionId) {
-                await setActive({ session: createdSessionId });
-                router.replace('/(auth)/verify-phone');
+
+            // Start the authentication process by calling `startSSOFlow()`
+            const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
+                strategy: 'oauth_google',
+                redirectUrl: redirectUri
+            });
+
+            if (createdSessionId) {
+                setActive!({ session: createdSessionId })
             } else {
+                // If there is no `createdSessionId`,
+                // there are missing requirements, such as MFA
+                // Use the `signIn` or `signUp` returned from `startSSOFlow`
+                // to handle next steps
                 console.error("No session or setActive is undefined");
             }
         } catch (err) {
             console.error("❌ Google Sign-in Error:", err);
+        } finally {
+            setLoading(false)
         }
     }, []);
 
@@ -64,14 +78,20 @@ const OAuth = ({ role }: { role?: string }) => {
             </View>
 
             <CustomButton
-                title="Log In with Google"
-                className="mt-5 w-full shadow-none"
+                title={`${loading ? 'Loading' : 'Sign in with Google'}`}
+                className={`mt-5 w-full shadow-none ${loading && 'opacity-60'}`}
+                disabled={loading}
                 IconLeft={() => (
-                    <Image
-                        source={icons.google}
-                        resizeMode="contain"
-                        className="w-5 h-5 mx-2"
-                    />
+                    loading ? (
+                        <ActivityIndicator size='small' color='white' className="w-5 h-5 mx-2" />
+                    ) : (
+                        <Image
+                            source={icons.google}
+                            resizeMode="contain"
+                            className="w-5 h-5 mx-2"
+                        />
+                    )
+                    //ActivityIndicator size small color black
                 )}
                 bgVariant="outline"
                 textVariant="primary"

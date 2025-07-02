@@ -9,8 +9,19 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
+        "EAS_BUILD_PROFILE": "development",
         "EXPO_PUBLIC_GOOGLE_API_KEY_DEV": "$EXPO_PUBLIC_GOOGLE_API_KEY_DEV",
-        "EAS_BUILD_PROFILE": "development"
+        "EXPO_PUBLIC_STRIPE_API_KEY": "$EXPO_PUBLIC_STRIPE_API_KEY",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "$EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "RESEND_API_KEY": "$RESEND_API_KEY",
+        "EXPO_PUBLIC_SERVER_URL": "$EXPO_PUBLIC_SERVER_URL",
+        "EXPO_PUBLIC_WEB_SOCKET_SERVER_URL": "$EXPO_PUBLIC_WEB_SOCKET_SERVER_URL",
+        "FIREBASE_API_KEY": "$FIREBASE_API_KEY",
+        "FIREBASE_PROJECT_ID": "$FIREBASE_PROJECT_ID",
+        "FIREBASE_STORAGE_BUCKET": "$FIREBASE_STORAGE_BUCKET",
+        "FIREBASE_MESSAGING_SENDER_ID": "$FIREBASE_MESSAGING_SENDER_ID",
+        "FIREBASE_APP_ID": "$FIREBASE_APP_ID",
+        "DATABASE_URL": "$DATABASE_URL"
       }
     },
     "production": {
@@ -19,19 +30,19 @@
       "developmentClient": false,
       "distribution": "store",
       "env": {
+        "EAS_BUILD_PROFILE": "production",
         "EXPO_PUBLIC_GOOGLE_API_KEY": "$EXPO_PUBLIC_GOOGLE_API_KEY",
         "EXPO_PUBLIC_STRIPE_API_KEY": "$EXPO_PUBLIC_STRIPE_API_KEY",
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "$EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY",
         "RESEND_API_KEY": "$RESEND_API_KEY",
-        "EXPO_PUBLIC_SERVER_URL": "https://glidex.expo.app",
-        "EXPO_PUBLIC_WEB_SOCKET_SERVER_URL": "wss://websocket-server-for-glidex.onrender.com",
+        "EXPO_PUBLIC_SERVER_URL": "$EXPO_PUBLIC_SERVER_URL",
+        "EXPO_PUBLIC_WEB_SOCKET_SERVER_URL": "$EXPO_PUBLIC_WEB_SOCKET_SERVER_URL",
         "FIREBASE_API_KEY": "$FIREBASE_API_KEY",
         "FIREBASE_PROJECT_ID": "$FIREBASE_PROJECT_ID",
         "FIREBASE_STORAGE_BUCKET": "$FIREBASE_STORAGE_BUCKET",
         "FIREBASE_MESSAGING_SENDER_ID": "$FIREBASE_MESSAGING_SENDER_ID",
         "FIREBASE_APP_ID": "$FIREBASE_APP_ID",
-
-        "EAS_BUILD_PROFILE": "production"
+        "DATABASE_URL": "$DATABASE_URL"
       },
       "android": {
         "buildType": "apk"

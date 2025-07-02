@@ -134,6 +134,8 @@ const AutocompletePage = () => {
                     keyExtractor={(item) => item.place_id}
                     keyboardShouldPersistTaps="handled"
                     contentContainerStyle={{ paddingBottom: 50 }}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <TouchableOpacity
                             onPress={() => fetchPlaceDetailsAndHandle(item.place_id, item.description)}

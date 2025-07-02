@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         const { carImageUri, profileImage, rating, carSeats, id } = body;
 
         if (!carImageUri || !profileImage || !rating || !carSeats) {
-            return Response.json({ error: "all fields are required" }, { status: 400 });
+            return Response.json({ error: "All fields are required" }, { status: 400 });
         }
 
 
@@ -25,10 +25,11 @@ export async function POST(request: Request) {
             profile_image_url: profileImage
         }).where(eq(users.clerk_id, id))
 
-        return Response.json({ status: 200 })
+        return Response.json({ message: 'Driver verified' }, { status: 200 })
 
 
     } catch (error) {
-
+        console.error("POST /driver/verify-driver failed", error)
+        return Response.json(error, { status: 500 });
     }
 }

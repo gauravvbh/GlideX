@@ -14,10 +14,22 @@ import RiderRidesItem from '@/components/RiderRidesItem'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
-import LottieView from 'lottie-react-native';
+// import LottieView from 'lottie-react-native';
 
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
+
+let LottieView: any = () => null;
+
+if (Platform.OS !== 'web') {
+    try {
+        LottieView = require('lottie-react-native').default;
+    } catch (err) {
+        console.warn('LottieView native import failed:', err);
+        LottieView = () => null;
+    }
+}
 
 
 const RideHome = () => {
@@ -83,8 +95,6 @@ const RideHome = () => {
     // }, [user])
 
 
-
-
     const sendLocationToWebSocket = async () => {
 
         if (isVerified && onDuty) {
@@ -120,6 +130,8 @@ const RideHome = () => {
                         role: 'rider',
                         driverId: user?.id
                     }))
+
+
                 }
                 else {
                     // 🚀 When toggled ON duty, tell the websocket
@@ -203,13 +215,18 @@ const RideHome = () => {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
             console.log('Message received from WebSocket:', message);
+            console.log('😂')
+            console.log(message.rideDetails)
             if (message.type === 'newRideOffer') {
                 addRideOffer(message.rideDetails);
                 Notifications.scheduleNotificationAsync({
                     content: {
-                        title: "🚗 New Ride Offer!",
-                        body: `Pickup at ${message.rideDetails.pickupAddress}`,
+                        title: "New Ride Offer!",
+                        body: `Pickup at ${message.rideDetails.pickupDetails.pickupAddress}`,
                         data: { rideId: message.rideDetails.id },
+                        badge: 1,
+                        sound: 'default',
+                        color: '#ffffff'  // White badge for dark logo
                     },
                     trigger: null
 
@@ -249,7 +266,10 @@ const RideHome = () => {
                 name: 'default',
                 importance: Notifications.AndroidImportance.MAX,
                 vibrationPattern: [0, 250, 250, 250],
-                lightColor: '#FF231F7C',
+                lightColor: '#FFFFFF',
+                enableLights: true,
+                enableVibrate: true,
+                showBadge: true,
             });
         }
 
@@ -268,7 +288,7 @@ const RideHome = () => {
         setLoading(true)
         const getDriverData = async () => {
             try {
-                const res = await fetch(`/driver/get?clerk_id=${user?.id}`);
+                const res = await fetch(`${API_URL}/api/driver/get?clerk_id=${user?.id}`);
                 const data = await res.json();
 
                 const isDataPresent = !!data[0].car_image_url;
@@ -295,7 +315,7 @@ const RideHome = () => {
         setLoading(true)
         const getDriverData = async () => {
             try {
-                const res = await fetch(`/driver/calculate-price?clerk_id=${user?.id}`);
+                const res = await fetch(`${API_URL}/api/driver/calculate-price?clerk_id=${user?.id}`);
                 const data = await res.json();
 
                 setTodayEarnings(data.totalEarnings)
@@ -560,6 +580,8 @@ const RideHome = () => {
                             keyExtractor={(item, index) =>
                                 item?.id?.toString() || `fallback-key-${index}`
                             }
+                            showsVerticalScrollIndicator={false}
+                            showsHorizontalScrollIndicator={false}
                             contentContainerStyle={{
                                 padding: 16,
                                 flexGrow: 1,
@@ -576,10 +598,7 @@ const RideHome = () => {
                                                 loop
                                                 style={{ width: 250, height: 250 }}
                                             />
-                                            <Text className="text-white text-xl text-center font-JakartaSemiBold mt-6 px-10">
-                                                No rides available right now. Stay active!
-                                            </Text>
-                                    </View>
+                                        </View>
                                     ) : (
                                         <AntDesign name="poweroff" size={100} color="white" />
                                     )}
@@ -631,7 +650,7 @@ const RideHome = () => {
                 </>
             )}
         </SafeAreaView>
-    );    
+    );
 }
 
 export default RideHome

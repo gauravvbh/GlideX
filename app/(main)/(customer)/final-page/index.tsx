@@ -18,8 +18,10 @@ import ReactNativeModal from 'react-native-modal';
 import Constants from 'expo-constants';
 import SlideButton from '@/components/SlideButton';
 import { getDangerEmailHtml } from '@/lib/dangerAlertTemplate';
+import { getNearbyDrivers } from '@/lib/calcRegion';
+import { Driver, RideOfferDetails } from '@/types/type';
 
-
+type PlainDriver = Omit<Driver, 'setCarImageURL' | 'setCarSeats' | 'setUserLocation' | 'setId' | 'setProfileImageURL' | 'setRating' | 'setFullName' | 'setRole'>;
 
 const publishableKey = Constants.expoConfig?.extra?.stripeApiKey;
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
@@ -48,7 +50,7 @@ const FinalPage = () => {
     }
 
     const { user } = useUser();
-    const { userAddress, destinationAddress } = useCustomer();
+    const { userAddress, destinationAddress, userLongitude, userLatitude, destinationLatitude, destinationLongitude } = useCustomer();
     const [page, setPage] = useState<string>('Loading');
     const [paid, setPaid] = useState(false);
     const { nearbyDrivers, selectedDriverId, selectedDriverDetails } = useDriverStore();
@@ -62,6 +64,7 @@ const FinalPage = () => {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [countdown, setCountdown] = useState(10);
     const [alertSent, setAlertSent] = useState(false);
+    const [rideDetails, setRideDetails] = useState<RideOfferDetails>()
 
 
 
@@ -102,8 +105,24 @@ const FinalPage = () => {
             const message = JSON.parse(event.data);
             console.log("📝 Received WS message:", message);
 
-            if (message.type === 'riderLocationUpdated' || message.type === 'riderLocationUpdate') {
-                updateSelectedDriverLocation(message.latitude, message.longitude, message.address);
+            if (message.type === 'riderLocationUpdated') {
+                console.log('📍 Rider location update:', message);
+                updateDriverLocation(message.driverId, message.latitude, message.longitude, message.address)
+                updateSelectedDriverLocation(message.latitude, message.longitude, message.address)
+
+
+
+                const updatedDrivers = useDriverStore.getState().nearbyDrivers?.filter(
+                    (driver) => driver.userLatitude && driver.userLongitude
+                ) || [];
+
+                updateMarkersOnMap(updatedDrivers);
+            }
+
+            if (message.type === 'riderLocationUpdate') {
+                console.log('📍 Rider location update:', message);
+                updateDriverLocation(message.driverId, message.latitude, message.longitude, message.address)
+                updateSelectedDriverLocation(message.latitude, message.longitude, message.address)
             }
 
             if (message.type === 'rideOfferRejected') {
@@ -143,11 +162,52 @@ const FinalPage = () => {
             if (message.type === 'rideEnded') {
                 setVerifyReached(true)
             }
+
+            if (message.type === 'driverOffline') {
+                if (page === 'Loading') {
+                    removeDriverLocation(message.driverId)
+                    removeNearbyDriver(message.driverId)
+                    clearSelectedDriver()
+
+                    const updatedDrivers = useDriverStore.getState().nearbyDrivers
+                    console.log('⭐⭐⭐⭐')
+                    console.log(updatedDrivers)
+                    updateMarkersOnMap(updatedDrivers);
+
+                    setPage('Error')
+                }
+            }
         };
     }, [ws]);
 
-    console.log('👋')
-    console.log(selectedDriverDetails)
+    useEffect(() => {
+        if (!activeRideId) return;
+
+        const details = giveRideDetails(activeRideId);
+        if (details) {
+            setRideDetails(details);
+        }
+    }, [activeRideId]);
+
+
+
+    const updateMarkersOnMap = async (driversToUse?: PlainDriver[]) => {
+        if (userLatitude && userLongitude) {
+            let driversWithDistanceAway: PlainDriver[] = [];
+            const driversToPass = driversToUse ?? nearbyDrivers;
+
+            if (destinationLatitude && destinationLongitude) {
+                driversWithDistanceAway = await getNearbyDrivers(userLatitude, userLongitude, driversToPass, destinationLatitude, destinationLongitude);
+            } else {
+                driversWithDistanceAway = await getNearbyDrivers(userLatitude, userLongitude, driversToPass);
+            }
+
+
+            // console.log('drivers with distance away')
+            // console.log(driversWithDistanceAway)
+            setNearbyDrivers(driversWithDistanceAway)
+        }
+    }
 
     useEffect(() => {
         if (verifyReached) {
@@ -158,7 +218,7 @@ const FinalPage = () => {
 
                 setAlertSent(true);
 
-                fetch(`${API_URL}/send-email`, {
+                fetch("https://utils-server-for-glidex.onrender.com/api/send-email", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -209,7 +269,7 @@ const FinalPage = () => {
             if (activeRideId && page === 'End') {
                 const rideDetails = giveRideDetails(activeRideId);
                 try {
-                    const url = `${API_URL}/ride/create`;
+                    const url = `${API_URL}/api/ride/create`;
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -237,7 +297,6 @@ const FinalPage = () => {
         saveRideToDB();
     }, [page]);
 
-    const handleCancelRide = () => { };
 
     const handleSlideComplete = () => {
 
@@ -278,47 +337,98 @@ const FinalPage = () => {
             urlScheme="myapp"
         >
             <RideLayout title='final page' disabled={(page === 'Loading' || page === 'OnWay' || page === 'Start') ? true : false}>
-                {page === 'OnWay' && <OnWay number={selectedDriverDetails?.number!} />}
-                {page === 'Start' && <Start number={selectedDriverDetails?.number!} otp={otp} />}
-                {page === 'Middle' && <Middle number={selectedDriverDetails?.number!} />}
-                {page === 'End' && <End number={selectedDriverDetails?.number!} />}
+                {page === 'OnWay' && <OnWay />}
+                {page === 'Start' && <Start otp={otp} />}
+                {page === 'Middle' && <Middle />}
+                {page === 'End' && <End />}
                 {page === 'Error' && <ErrorFindDriver />}
                 {page === 'Loading' && <LoadingRider />}
 
                 <View className='h-[1px] bg-gray-300 my-4' />
 
-                <FinalDetails paid={paid} setPaid={setPaid} page={page} />
+                <FinalDetails
+                    paid={paid}
+                    setPaid={setPaid}
+                    page={page}
+                    {...(page !== 'Loading' && page !== 'Error' && { number: selectedDriverDetails?.number })}
+                />
 
                 <ReactNativeModal isVisible={showModal}>
-                    <View className='bg-white p-5 rounded-md'>
-                        <Text className='text-2xl font-bold text-center mb-2'>🎉 Ride Completed!</Text>
+                    <View className="bg-white p-6 rounded-2xl border border-neutral-200 w-11/12 self-center">
 
+                        {/* Header */}
+                        <View className="items-center mb-4">
+                            <Text className="text-xl font-JakartaBold text-black text-center mb-1">
+                                🎉 Ride Completed!
+                            </Text>
+                            <Text className="text-sm font-JakartaLight text-neutral-600 text-center">
+                                Thank you for riding with us.
+                            </Text>
+                        </View>
 
+                        {/* Fare Summary Section */}
+                        <View className="my-4 bg-neutral-100 rounded-lg p-4">
+                            <View className="flex-row justify-between mb-2">
+                                <Text className="text-sm font-JakartaMedium text-neutral-700">Total Fare</Text>
+                                <Text className="text-base font-JakartaSemiBold text-black">
+                                    ${selectedDriverDetails?.price ?? '0.00'}
+                                </Text>
+                            </View>
+                            <View className="flex-row justify-between">
+                                <Text className="text-sm text-neutral-500">Distance</Text>
+                                <Text className="text-sm text-neutral-500">
+                                    {(rideDetails && rideDetails.distance) ?? 'N/A'}
+                                </Text>
+                            </View>
+                            <View className="flex-row justify-between">
+                                <Text className="text-sm text-neutral-500">Duration</Text>
+                                <Text className="text-sm text-neutral-500">
+                                    {(rideDetails && rideDetails.duration) ?? 'N/A'}
+                                </Text>
+                            </View>
+                        </View>
+
+                        {/* Payment Section */}
                         {!paid ? (
                             <>
-                                <Text className='text-lg text-center'>Please complete your payment</Text>
-                                <PaymentPage
-                                    fullName={user?.fullName!}
-                                    email={user?.emailAddresses[0].emailAddress!}
-                                    amount={selectedDriverDetails?.price!}
-                                    driverId={selectedDriverDetails?.id!}
-                                    rideTime={selectedDriverDetails?.distanceAway!}
-                                    handlePaymentDone={() => setPaid(true)}
-                                />
-                                <Text className='text-center my-3 text-gray-500'>— OR —</Text>
-                                <Text className='text-center text-lg'>Pay with cash to the driver</Text>
+                                <View className="my-2">
+                                    <Text className="text-base font-JakartaMedium text-neutral-800 mt-5 text-center">
+                                        Please complete your payment
+                                    </Text>
+
+                                    <PaymentPage
+                                        fullName={user?.fullName!}
+                                        email={user?.emailAddresses[0].emailAddress!}
+                                        amount={selectedDriverDetails?.price!}
+                                        driverId={selectedDriverDetails?.id!}
+                                        rideTime={selectedDriverDetails?.distanceAway!}
+                                        handlePaymentDone={() => setPaid(true)}
+                                    />
+
+                                    <Text className="text-center my-3 text-neutral-500">— OR —</Text>
+
+                                    <Text className="text-center text-base text-neutral-700">
+                                        Pay with cash to the driver
+                                    </Text>
+                                </View>
                             </>
                         ) : (
-                            <Text className='text-green-600 font-semibold text-center text-lg mt-5'>✅ Payment completed</Text>
+                            <View className="items-center my-4">
+                                <Text className="text-green-600 font-JakartaSemiBold text-lg text-center">
+                                    ✅ Payment completed
+                                </Text>
+                            </View>
                         )}
 
+                        {/* Action Button */}
                         <CustomButton
-                            title='Return to Home'
+                            title="Return to Home"
                             onPress={handleGoBack}
-                            className='mt-5'
+                            className="w-full mt-4"
                         />
                     </View>
                 </ReactNativeModal>
+
 
                 <ReactNativeModal isVisible={verifyReached}>
                     <View className="bg-white p-5 rounded-lg items-center">

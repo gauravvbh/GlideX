@@ -6,7 +6,6 @@ import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import OAuth from '@/components/OAuth'
 import { useAuth, useSignIn, useUser } from '@clerk/clerk-expo'
-import { useUserStore } from '@/store'
 import Constants from 'expo-constants';
 
 
@@ -18,8 +17,7 @@ const SignIn = () => {
 
     const [form, setForm] = useState({
         email: '',
-        password: '',
-        phone: ''
+        password: ''
     })
 
     const onSignInPress = async () => {
@@ -31,33 +29,37 @@ const SignIn = () => {
                 identifier: form.email,
                 password: form.password,
             })
-            console.log(signInAttempt.id)
             if (signInAttempt.status === 'complete' && signInAttempt.createdSessionId) {
                 await setActive({ session: signInAttempt.createdSessionId })
 
-                const result = await fetch(`${API_URL}/sign-in`, {
+                const result = await fetch(`${API_URL}/api/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        email: form.email,
-                        phone: form.phone,
+                        email: form.email
                     })
                 });
                 const { data } = await result.json()
 
-                await fetch(`${API_URL}/clerk-role`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        clerk_id: data?.clerk_id,
-                        role: data.role,
-                        email: data.email
-                    })
-                });
+                try {
+                    await fetch(`${API_URL}/api/clerk-role`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            clerk_id: data?.clerk_id,
+                            role: data.role,
+                            email: data.email,
+                            number: data.number
+                        })
+                    });
+                } catch (error) {
+                    console.log('fuck')
+                    console.log(error)
+                }
 
                 if (data.role === 'customer') {
                     router.replace('/(customer)/(tabs)/home' as never)
@@ -106,19 +108,6 @@ const SignIn = () => {
                     }}
                 />
                 <InputField
-                    label="Number"
-                    placeholder="Enter Your phone number"
-                    value={form.phone}
-                    keyboardType="phone-pad"
-                    onChangeText={(value) => {
-                        setForm({
-                            ...form,
-                            phone: value
-
-                        })
-                    }}
-                />
-                <InputField
                     label="Password"
                     placeholder="Enter Your password"
                     icon={icons.lock}
@@ -139,9 +128,14 @@ const SignIn = () => {
                     className='mt-6 w-full'
                 />
 
+                {/* <OAuth role={safeRole} /> */}
                 <OAuth />
 
-                <Link href={"/(auth)/role"} className='text-lg text-center text-general-200 mt-10'>
+                <Link
+                    onPress={() => router.push('/(auth)/role')}
+                    href="/(auth)/role"
+                    className='text-lg text-center text-general-200 mt-10'
+                >
                     <Text className='text-white'>Don't have an account? </Text>
                     <Text className='text-primary-500'>Sign Up</Text>
                 </Link>

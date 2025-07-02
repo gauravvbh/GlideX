@@ -1,9 +1,6 @@
 
 import { db } from '@/src/db';
 import { rides } from '@/src/db/schema';
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: Request) {
     try {
@@ -57,10 +54,11 @@ export async function POST(request: Request) {
 
 
         return Response.json(
+            { message: "Ride created" },
             { status: 200 }
         );
     } catch (error: any) {
         console.log(error)
-        return Response.json({ error: error.message }, { status: 400 });
+        return Response.json({ error }, { status: 400 });
     }
 }

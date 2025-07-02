@@ -122,6 +122,7 @@ export default {
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       RESEND_API_KEY: process.env.RESEND_API_KEY,
       webSocketServerUrl: process.env.EXPO_PUBLIC_WEB_SOCKET_SERVER_URL,
+      databaseUrl: process.env.DATABASE_URL
     },
     owner: "gauravvbh",
     web: {

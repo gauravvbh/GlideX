@@ -10,12 +10,12 @@ const RolePage = () => {
 
     const handleCustomerPress = () => {
         setRole({ role: 'customer' })
-        router.push({ pathname: '(auth)/sign-up' as any, params: { role: 'customer' } });
+        router.push('/(auth)/sign-up');
     };
 
     const handleDriverPress = () => {
         setRole({ role: 'rider' })
-        router.push({ pathname: '(auth)/sign-up' as any, params: { role: 'rider' } });
+        router.push('/(auth)/sign-up');
     };
 
     const RoleCard = ({ onPress, image, title, description }: { onPress: () => void, image: any, title: string, description: string }) => (

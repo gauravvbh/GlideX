@@ -192,13 +192,17 @@ export const useDriverStore = create<DriverStore>((set, get) => ({
     },
 
     addNearbyDrivers: (driver: PlainDriver) => {
-        set((state) => ({
-            nearbyDrivers: [
-                ...state.nearbyDrivers,
-                driver
-            ]
-        }))
-    },
+        set((state) => {
+            const alreadyExists = state.nearbyDrivers.some(d => d.id === driver.id);
+            if (alreadyExists) {
+                return {}; // No update needed
+            }
+
+            return {
+                nearbyDrivers: [...state.nearbyDrivers, driver]
+            };
+        });
+    },    
     giveRiderDetails: (driverId: string) => {
         const riderDetails = get().drivers.find(rider => rider.id === driverId);
         return riderDetails;

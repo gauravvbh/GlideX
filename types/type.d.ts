@@ -217,6 +217,9 @@ declare interface WSStore {
 
 declare interface RideOfferDetails {
     id: string,
+    fare: string,
+    duration: string,
+    distance: string,
     pickupDetails: {
         pickup: string,
         pickupAddress: string,

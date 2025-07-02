@@ -132,7 +132,7 @@ const Map = () => {
   const [driverPickupLongitude, setDriverPickupLongitude] = useState<number>()
   const [driverDropoffLatitude, setDriverDropoffLatitude] = useState<number>();
   const [driverDropoffLongitude, setDriverDropoffLongitude] = useState<number>()
-  const [rideStatus, setRideStatus] = useState<string>('offer')
+  const [rideStatus, setRideStatus] = useState<string>('Offer')
 
   // const [markers, setMarkers] = useState<(PlainDriver)[]>([]);
   const mapRef = useRef<any>(null);
@@ -198,13 +198,13 @@ const Map = () => {
 
   const longitude = userLongitude ?? driverLongitude;
   const latitude = userLatitude ?? driverLatitude;
-  const driverOriginLatitude = rideStatus === 'offer' ? driverLatitude : driverPickupLatitude;
-  const driverOriginLongitude = rideStatus === 'offer' ? driverLongitude : driverPickupLongitude;
-  const driverDestinationLatitude = rideStatus === 'offer' ? driverPickupLatitude : driverDropoffLatitude;
-  const driverDestinationLongitude = rideStatus === 'offer' ? driverPickupLongitude : driverDropoffLongitude;
+  const driverOriginLatitude = rideStatus === 'Offer' ? driverLatitude : driverPickupLatitude;
+  const driverOriginLongitude = rideStatus === 'Offer' ? driverLongitude : driverPickupLongitude;
+  const driverDestinationLatitude = rideStatus === 'Offer' ? driverPickupLatitude : driverDropoffLatitude;
+  const driverDestinationLongitude = rideStatus === 'Offer' ? driverPickupLongitude : driverDropoffLongitude;
 
-  const customerDestinationLatitude = rideStatus === 'offer' ? driverLatitude : destinationLatitude;
-  const customerDestinationLongitude = rideStatus === 'offer' ? driverLongitude : destinationLongitude;
+  const customerDestinationLatitude = rideStatus === 'Offer' ? driverLatitude : destinationLatitude;
+  const customerDestinationLongitude = rideStatus === 'Offer' ? driverLongitude : destinationLongitude;
 
 
 
@@ -272,7 +272,8 @@ const Map = () => {
         clearSelectedDriver()
 
         const updatedDrivers = useDriverStore.getState().nearbyDrivers
-
+        console.log('⭐⭐⭐⭐')
+        console.log(updatedDrivers)
         updateMarkersOnMap(updatedDrivers);
       }
 
@@ -432,7 +433,7 @@ const Map = () => {
         // Fetch only once
         if (!drivers || drivers.length === 0) {
           try {
-            const url = `${API_URL}/driver/get-all`;
+            const url = `${API_URL}/api/driver/get-all`;
 
             const response = await fetch(url, {
               method: 'GET',
@@ -603,17 +604,15 @@ const Map = () => {
   ]);
 
 
-  function dedupeDriversById(drivers: PlainDriver[]): PlainDriver[] {
+  function dedupeDriversByIdAndLocation(drivers: PlainDriver[]): PlainDriver[] {
     const seen = new Set<string>();
     return drivers.filter(driver => {
-      if (!driver.id) return false;
-      if (seen.has(driver.id)) return false;
-      seen.add(driver.id);
+      const key = `${driver.id}-${driver.userLatitude}-${driver.userLongitude}`;
+      if (!driver.id || seen.has(key)) return false;
+      seen.add(key);
       return true;
     });
   }
-  
-  
 
 
 
@@ -778,13 +777,12 @@ const Map = () => {
           )
         }
 
-
         {markers && markers.length > 0 && !selectedDriverDetails && (
-          dedupeDriversById(markers)
-            .filter(m => m.userLatitude && m.userLongitude)
-            .map(m => (
+          dedupeDriversByIdAndLocation(markers)
+            .filter((m) => m.userLatitude && m.userLongitude)
+            .map((m, index) => (
               <Marker
-                key={`marker-${m.id}-${m.userLatitude}-${m.userLongitude}`}
+                key={`driver-marker-${m.id}-${m.userLatitude?.toFixed(6)}-${m.userLongitude?.toFixed(6)}`}
                 coordinate={{ latitude: m.userLatitude, longitude: m.userLongitude }}
                 anchor={{ x: 0.5, y: 0.5 }}
                 title={m.full_name}

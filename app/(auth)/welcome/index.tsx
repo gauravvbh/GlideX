@@ -15,7 +15,7 @@ const WelcomePage = () => {
     return (
         <SafeAreaView className='flex h-full items-center justify-between bg-black'>
             <Pressable
-                onPress={() => router.replace('/(auth)/role' as never)}
+                onPress={() => router.replace('/(auth)/sign-in' as never)}
                 className='w-full flex justify-end items-end p-5'
             >
                 <Text className='text-white text-md font-JakartaBold'>Skip</Text>
@@ -47,7 +47,7 @@ const WelcomePage = () => {
                 className="w-11/12 mt-10 mb-5 text-white "
                 onPress={() =>
                     isLastSlide ?
-                        router.replace('/(auth)/role' as never) :
+                        router.replace('/(auth)/sign-in' as never) :
                         swiperRef.current?.scrollBy(1) //setActiveIndex(prev => prev + 1)
                 }
             />

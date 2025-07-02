@@ -32,11 +32,13 @@ export async function GET(request: Request) {
 
         const totalEarnings = data.reduce((acc, ride) => acc + (ride.fare_price ?? 0), 0);
 
+        const roundedEarnings = Math.round(totalEarnings * 100) / 100;
+
         return Response.json({
-            totalEarnings,
+            totalEarnings: roundedEarnings,
         }, { status: 200 });
     } catch (error) {
         console.error(error);
-        return Response.json({ error: "Something went wrong" }, { status: 500 });
+        return Response.json({ error: error }, { status: 500 });
     }
 }

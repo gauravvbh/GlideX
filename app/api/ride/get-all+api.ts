@@ -49,6 +49,6 @@ export async function GET(request: Request) {
 
     } catch (error: any) {
         console.error("Error Getting all rides:", error);
-        return Response.json({ error: error?.message || "Internal Server Error" }, { status: 500 });
+        return Response.json({ error: error || "Internal Server Error" }, { status: 500 });
     }
 }

@@ -19,7 +19,7 @@ const ShowAllRides = () => {
       if (!user?.id) return;
       setLoading(true);
       try {
-        const url = `${API_URL}/ride/get-all?clerk_id=${user.id}`;
+        const url = `${API_URL}/api/ride/get-all?clerk_id=${user.id}`;
         const res = await fetch(url);
         const { data } = await res.json();
         setRides(Array.isArray(data) ? data : []);
@@ -43,6 +43,8 @@ const ShowAllRides = () => {
         renderItem={({ item }) => <RideCard ride={item} />}
         keyExtractor={(item) => item.ride_id?.toString() ?? Math.random().toString()}
         contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         ListEmptyComponent={() =>
           loading ? (
             <ActivityIndicator size="large" color="#fff" style={{ marginTop: 40 }} />

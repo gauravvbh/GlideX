@@ -64,13 +64,12 @@ const RiderHeader = ({ hasPermissions, todayEarnings }: { hasPermissions: boolea
                 </TouchableOpacity>
                 <MaterialIcons name='notifications' size={24} color='white' />
             </View>
-            <View className="h-16 px-2.5 py-3.5 flex-row items-center justify-between bg-gray-500">
+            <View className="h-16 px-5 py-3 flex-row items-center justify-between bg-gray-500">
                 <Text className='font-JakartaMedium text-lg text-white'>Today's Earning</Text>
                 <View className="flex-row items-center gap-4">
                     <Text className='text-md font-JakartaMedium text-white'>
                         $ {isVerified ? todayEarnings : '_ _'}
                     </Text>
-                    <MaterialIcons name='arrow-drop-down' size={24} color='white' />
                 </View>
             </View>
         </>

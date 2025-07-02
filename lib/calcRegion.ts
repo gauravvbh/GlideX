@@ -105,6 +105,8 @@ export const getNearbyDrivers = async (
         .join("|");
 
     const origin = `${userLatitude},${userLongitude}`;
+
+    // to get the distance between the user and each driver.
     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destinations}&key=${googleMapsApiKey}&units=metric`;
 
     try {

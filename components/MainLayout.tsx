@@ -1,20 +1,23 @@
-import { useEffect } from 'react'
-import { Stack } from 'expo-router'
+import { useEffect } from 'react';
+import { Redirect, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useAuth } from '@clerk/clerk-expo'
+import { useAuth, useUser } from '@clerk/clerk-expo';
 
 const MainLayout = ({ isFontsLoaded }: { isFontsLoaded: boolean }) => {
-    const { isLoaded } = useAuth();
+    const { isLoaded: isAuthLoaded } = useAuth();
+    const { isLoaded: isUserLoaded, user } = useUser();
 
     useEffect(() => {
-        if (isFontsLoaded && isLoaded) {
+        if (isFontsLoaded && isAuthLoaded && isUserLoaded) {
             SplashScreen.hideAsync();
         }
-    }, [isFontsLoaded, isLoaded]);
+    }, [isFontsLoaded, isAuthLoaded, isUserLoaded]);
 
-    return (
-        <Stack screenOptions={{ headerShown: false }} />
-    )
-}
+    if (!isFontsLoaded || !isAuthLoaded || !isUserLoaded) {
+        return null; // or a loading screen
+    }
 
-export default MainLayout
+    return <Stack screenOptions={{ headerShown: false }} />;
+};
+
+export default MainLayout;

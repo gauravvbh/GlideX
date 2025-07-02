@@ -10,6 +10,7 @@ import { ClerkProvider } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache'
 import Constants from 'expo-constants';
 
+
 const clerkPublishableKey = Constants.expoConfig?.extra?.clerkPublishableKey;
 
 

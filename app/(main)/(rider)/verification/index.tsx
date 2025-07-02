@@ -11,6 +11,10 @@ import ReactNativeModal from 'react-native-modal';
 import CustomButton from '@/components/CustomButton';
 import { router } from 'expo-router';
 import { useDriver, useDriverDetails } from '@/store';
+import Constants from 'expo-constants'
+
+
+const API_URL = Constants.expoConfig?.extra?.serverUrl;
 
 const VerificationPage = () => {
     const { user } = useUser();
@@ -78,7 +82,7 @@ const VerificationPage = () => {
 
     const handleSubmit = async () => {
         try {
-            const doneUpdate = await fetch('/driver/verify-driver', {
+            const doneUpdate = await fetch(`${API_URL}/api/driver/verify-driver`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

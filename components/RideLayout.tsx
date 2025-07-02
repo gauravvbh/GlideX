@@ -1,6 +1,6 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React, { useRef } from 'react'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
 import { icons } from '@/constants/data'
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
@@ -58,15 +58,16 @@ const RideLayout = ({ title, children, snapPoints, disabled }: { title: string, 
                 <BottomSheet
                     keyboardBehavior='extend'
                     ref={bottomSheetRef}
-                    snapPoints={snapPoints || ['40%', '80%']}
+                    snapPoints={snapPoints || ['40%', '70%']}
                     index={0}
+                    enablePanDownToClose={false}
                     style={{
 
                         borderTopEndRadius: 50
                     }}
 
                 >
-                    <BottomSheetView style={{ flex: 1, padding: 20, borderRadius: 50 }}>
+                    <BottomSheetView style={{ flex: 1, padding: 20, borderRadius: 50, backgroundColor: 'white' }}>
                         {children}
                     </BottomSheetView>
                 </BottomSheet>

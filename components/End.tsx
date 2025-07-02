@@ -1,9 +1,9 @@
 import { View, Text, Image } from 'react-native'
 import { icons } from '@/constants/data'
 
-const End = ({ number }: { number: string }) => {
+const End = () => {
     return (
-        <View className='flex-row'>
+        <View className='flex-row gap-x-5'>
             <View className='h-20  w-20'>
                 <Image
                     source={icons.cab}
@@ -11,12 +11,9 @@ const End = ({ number }: { number: string }) => {
                     resizeMode='contain'
                 />
             </View>
-            <View className='w-3/6 pl-5 m-auto'>
-                <Text className='font-Jakarta text-lg'>Congratss!!</Text>
-                <Text className='font-JakartaSemiBold text-2xl'>🎊</Text>
-            </View>
-            <View className='m-auto'>
-                <Text className='text-lg font-Jakarta'>+91 {number}</Text>
+            <View className='flex-1 justify-center'>
+                <Text className='font-Jakarta text-base text-gray-600'>You’ve reached your destination</Text>
+                <Text className='font-JakartaSemiBold text-xl text-black'>Congrats! 🎉</Text>
             </View>
         </View>
     )

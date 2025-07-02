@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, uniqueIndex, doublePrecision, integer, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, uniqueIndex, doublePrecision, integer, timestamp, uuid, real } from "drizzle-orm/pg-core";
 
 export const users = pgTable(
     "users",
@@ -48,5 +48,5 @@ export const drivers = pgTable("drivers", {
     car_image_url: varchar("car_image_url", { length: 500 }).notNull(),
 
     car_seats: integer("car_seats").notNull(),
-    rating: integer("rating").notNull(),
+    rating: real("rating").notNull(),
 });

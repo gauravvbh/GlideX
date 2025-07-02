@@ -6,11 +6,12 @@ import { icons } from "@/constants/data";
 import { useRouter } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { formatTime } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-expo";
 import Constants from 'expo-constants';
 
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
+const googleMapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
 
 
 
@@ -22,6 +23,8 @@ const ConfirmRidePage = () => {
     const { ws, setWebSocket } = useWSStore();
     const { user } = useUser()
     const { addRideOffer } = useRideOfferStore(store => store);
+    const [rideDuration, setRideDuration] = useState<string>('')
+    const [rideDistance, setRideDistance] = useState<string>('')
 
 
     // const findSelectedDriverDetails = nearbyDrivers?.find(
@@ -42,7 +45,7 @@ const ConfirmRidePage = () => {
 
         if (!ws) {
             const newWs = new WebSocket(WEBSOCKET_API_URL);
-            
+
 
             newWs.onopen = () => {
                 console.log("WebSocket connected");
@@ -96,11 +99,58 @@ const ConfirmRidePage = () => {
         return '';
     }
 
+    useEffect(() => {
+        const fetchRideDuration = async () => {
+            const calRideDuration = async (): Promise<string> => {
+                const responseToDest = await fetch(
+                    `https://maps.googleapis.com/maps/api/directions/json?origin=${userLatitude},${userLongitude}&destination=${destinationLatitude},${destinationLongitude}&key=${googleMapsApiKey}`
+                );
+
+                const dataToDest = await responseToDest.json();
+                const timeToDest = dataToDest.routes[0].legs[0].duration.value; // in seconds
+                const finalTimeToDest = timeToDest + 300; //jam
+                const timeInMinutes = Math.round(finalTimeToDest / 60);
+
+                if (timeInMinutes < 60) {
+                    return `${timeInMinutes} mins`;
+                } else {
+                    const timeInHours = (timeInMinutes / 60).toFixed(1);
+                    return `${timeInHours} hours`;
+                }
+            };
+
+            const duration = await calRideDuration();
+            setRideDuration(duration);
+        };
+
+
+        const fetchRideDistance = async () => {
+            const calRideDistance = async (): Promise<string> => {
+                const responseToDest = await fetch(
+                    `https://maps.googleapis.com/maps/api/directions/json?origin=${userLatitude},${userLongitude}&destination=${destinationLatitude},${destinationLongitude}&key=${googleMapsApiKey}`
+                );
+
+                const dataToDest = await responseToDest.json();
+                const DistToDest = dataToDest.routes[0].legs[0].distance.text;
+                return DistToDest;
+            };
+
+            const distance = await calRideDistance();
+            setRideDistance(distance);
+        };
+
+        fetchRideDuration();
+        fetchRideDistance();
+    }, [])
+
 
     const rideDetails = () => {
         return {
             id: generateRideId(),
             role: 'customer',
+            fare: selectedDriverDetails?.price ?? '0',
+            duration: rideDuration ?? '0',
+            distance: rideDistance,
             pickupDetails: {
                 pickup: makePickup(),
                 pickupAddress: userAddress ?? '',
@@ -121,7 +171,7 @@ const ConfirmRidePage = () => {
             },
             rider_id: selectedDriverId ?? '',
             customer_id: user?.id ?? '',
-            status: 'offer',
+            status: 'Offer',
         };
     };
 

@@ -1,11 +1,11 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Linking } from 'react-native'
 import { useCustomer, useDriverStore } from '@/store'
 import { icons } from '@/constants/data'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useUser } from '@clerk/clerk-expo';
 import Payment from './Payment';
 
-const FinalDetails = ({ paid, setPaid, page }: { paid: boolean; setPaid: (value: boolean) => void, page: string }) => {
+const FinalDetails = ({ paid, setPaid, page, number }: { paid: boolean; setPaid: (value: boolean) => void, page: string, number?: string }) => {
     const {
         userAddress,
         destinationAddress
@@ -44,6 +44,22 @@ const FinalDetails = ({ paid, setPaid, page }: { paid: boolean; setPaid: (value:
                 />
                 <Text className='my-auto ml-2 text-lg text-start'>{destinationAddress && destinationAddress}</Text>
             </View>
+            {/* Call Driver Section */}
+            {number && (
+                <View className="mt-8 flex-row items-center justify-between bg-neutral-100 p-4 rounded-lg border border-neutral-300">
+                    <View>
+                        <Text className="text-base font-JakartaMedium text-neutral-700">Need Help?</Text>
+                        <Text className="text-sm text-neutral-500">Call your driver</Text>
+                    </View>
+                    <TouchableOpacity
+                        onPress={() => Linking.openURL(`tel:${number}`)}
+                        className="bg-black px-4 py-2 rounded-full"
+                    >
+                        <Text className="text-white font-JakartaSemiBold text-base">Call</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             <View className='mt-10 w-full'>
                 <View className='flex-row justify-between'>
                     <View className='flex-row '>
@@ -58,7 +74,7 @@ const FinalDetails = ({ paid, setPaid, page }: { paid: boolean; setPaid: (value:
                             <View className='bg-green-50 p-4 mt-5 rounded-md'>
                                 <Text className='text-green-600 font-semibold text-center text-lg'>✅ Payment Complete</Text>
                             </View>
-                          
+
                         ) : (
                             <>
                                 <Payment

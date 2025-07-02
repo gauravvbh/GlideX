@@ -43,7 +43,7 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
 
     const fetchPaymentSheetParams = async () => {
         try {
-            const response = await fetch('https://stripe-server-for-glidex.onrender.com/create-payment', {
+            const response = await fetch('https://utils-server-for-glidex.onrender.com/api/create-payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export default function Payment({ fullName, email, amount, driverId, rideTime, h
                 console.log('⚠️')
                 throw new Error('Failed to create payment');
             }
-            
+
             const data = await response.json();
 
             console.log(data)
