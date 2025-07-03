@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Rating } from 'react-native-ratings';
 import { useTheme } from 'react-native-paper';
@@ -28,6 +28,10 @@ const VerificationPage = () => {
     const [rating, setRating] = useState(0);
     const [carSeats, setCarSeats] = useState('');
 
+    const [carImageLoading, setCarImageLoading] = useState<boolean>(false)
+    const [profileImageLoading, setProfileImageLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
+
     const { setCarImageURL, setCarSeats: setStoreCarSeats, setProfileImageURL, setRating: setStoreRating } = useDriver();
 
     const {
@@ -36,51 +40,75 @@ const VerificationPage = () => {
 
 
     const pickCarImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+        setCarImageLoading(true)
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
 
-        if (!result.canceled) {
-            const uri = result.assets?.[0]?.uri;
-            const fileName = result.assets?.[0]?.fileName ?? `${Date.now()}.jpg`;
+            if (!result.canceled) {
+                const uri = result.assets?.[0]?.uri;
+                const fileName = result.assets?.[0]?.fileName ?? `${Date.now()}.jpg`;
 
-            try {
-                const imageUrl = await uploadImageToFirebase(uri, fileName);
-                setCarImageUri(imageUrl);
-            } catch (error) {
-                console.error("Error uploading image to Firebase:", error);
+                try {
+                    const imageUrl = await uploadImageToFirebase(uri, fileName);
+                    setCarImageUri(imageUrl);
+                } catch (error) {
+                    console.error("Error uploading image to Firebase:", error);
+                }
             }
+        } catch (error: any) {
+            console.log(error)
+            Alert.alert('Car Image Upload Failed', error.message)
+        } finally {
+            setCarImageLoading(false)
         }
     };
 
     const pickProfileImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+        setProfileImageLoading(true)
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
 
-        if (!result.canceled) {
-            const uri = result.assets?.[0]?.uri;
-            const fileName = result.assets?.[0]?.fileName ?? `${Date.now()}.jpg`;
+            if (!result.canceled) {
+                const uri = result.assets?.[0]?.uri;
+                const fileName = result.assets?.[0]?.fileName ?? `${Date.now()}.jpg`;
 
-            try {
-                const imageUrl = await uploadImageToFirebase(uri, fileName);
-                setProfileImage(imageUrl);
-            } catch (error) {
-                console.error("Error uploading image to Firebase:", error);
+                try {
+                    const imageUrl = await uploadImageToFirebase(uri, fileName);
+                    setProfileImage(imageUrl);
+                } catch (error) {
+                    console.error("Error uploading image to Firebase:", error);
+                }
             }
+        } catch (error: any) {
+            console.log(error)
+            Alert.alert('Profile Image Upload Failed', error.message)
+        } finally {
+            setProfileImageLoading(false)
         }
     };
 
 
     const handleSubmit = async () => {
+
+        if (!user || !carImageUri || !profileImage || !rating || !carSeats) {
+            Alert.alert('Submission Failed', 'Please fill all the details to continue.')
+            return;
+        }
+
+
+        setLoading(true)
         try {
             const doneUpdate = await fetch(`${API_URL}/api/driver/verify-driver`, {
                 method: 'POST',
@@ -103,12 +131,12 @@ const VerificationPage = () => {
             setIsVerified(true);
 
             router.replace('/(rider)/home')
-        } catch (error) {
+        } catch (error: any) {
             console.log('error in driver verification page', error)
+            Alert.alert('Submission Failed', error.message)
+        } finally {
+            setLoading(false)
         }
-
-
-        //update driver details
     };
 
     return (
@@ -120,7 +148,7 @@ const VerificationPage = () => {
                     </TouchableOpacity>
                     <View className="mb-6">
                         <Text className="text-lg font-bold text-white mb-3">Car Image</Text>
-                        <Button title="Upload Car Image" onPress={pickCarImage} />
+                        <Button title="Upload Car Image" onPress={pickCarImage} disabled={carImageLoading} />
                         {carImageUri && (
                             <View className='w-full flex-row  mt-5 justify-between items-center'>
                                 <View className='flex-row gap-x-2'>
@@ -155,7 +183,7 @@ const VerificationPage = () => {
 
                     <View className="mb-6">
                         <Text className="text-lg font-bold text-white mb-3">Profile Image</Text>
-                        <Button title="Upload Profile Image" onPress={pickProfileImage} />
+                        <Button title="Upload Profile Image" onPress={pickProfileImage} disabled={profileImageLoading} />
                         {profileImage && (
                             <View className='w-full flex-row  mt-5 justify-between items-center'>
                                 <View className='flex-row gap-x-2'>
@@ -215,7 +243,7 @@ const VerificationPage = () => {
                         />
                     </View>
 
-                    <CustomButton title="Submit" className='mt-10' onPress={handleSubmit} />
+                    <CustomButton title="Submit" className={`mt-10 ${loading && 'opacity-60'}`} onPress={handleSubmit} />
                 </View>
             </ScrollView>
         </SafeAreaView>
