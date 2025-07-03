@@ -2,17 +2,9 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: './.env.local' });
 
-const isProduction = process.env.EAS_BUILD_PROFILE === 'production';
-
-const MAPS_KEY = isProduction
-  ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-  : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
-
-
+const MAPS_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
 const STRIPE_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY;
-
-
 
 
 export default {

@@ -18,11 +18,6 @@ import Constants from 'expo-constants';
 
 const googlePlacesApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
 
-// const googlePlacesApiKey =
-//     process.env.NODE_ENV === 'production'
-//         ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-//         : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
-
 type Suggestion = {
     description: string;
     place_id: string;

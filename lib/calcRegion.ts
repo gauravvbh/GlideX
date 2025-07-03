@@ -1,11 +1,4 @@
 import { Driver } from "@/types/type";
-
-// const isProduction = process.env.EAS_BUILD_PROFILE === 'production';
-
-// const MAPS_KEY = isProduction
-//     ? process.env.EXPO_PUBLIC_GOOGLE_API_KEY
-//     : process.env.EXPO_PUBLIC_GOOGLE_API_KEY_DEV;
-
 import Constants from 'expo-constants';
 
 const googleMapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
