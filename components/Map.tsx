@@ -615,18 +615,20 @@ const Map = () => {
   }
 
 
-  useEffect(() => {
-    if (userLongitude && userLatitude) {
-      setLoading(false)
-    }
-    else {
-      setLoading(true)
-    }
-  }, [userLongitude, userLatitude])
+  // console.log('hahahaha')
+  // console.log(userLatitude)
+  // console.log(userLongitude)
+  // useEffect(() => {
+  //   if (userLongitude && userLatitude) {
+  //     setLoading(false)
+  //   }
+  //   else {
+  //     setLoading(true)
+  //   }
+  // }, [userLongitude, userLatitude])
 
 
-
-  if (loading) {
+  if (loading && (!userLatitude || !userLongitude)) {
     return (
       <View className="flex justify-center items-center w-full h-full">
         <ActivityIndicator size="large" color="#ffffff" />

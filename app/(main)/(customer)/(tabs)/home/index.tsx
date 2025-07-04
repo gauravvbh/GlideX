@@ -4,7 +4,6 @@ import { router } from 'expo-router';
 import { FlatList, Image, Platform, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { icons, images } from '@/constants/data';
 import RideCard from '@/components/RideCard';
-import GoogleTextInput from '@/components/GoogleTextInput';
 import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
 import { useCustomer, useRidesStore, useUserStore, useWSStore } from '@/store';
@@ -28,7 +27,6 @@ const HomePage = () => {
     const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL } = useCustomer();
 
     const { setRides, Rides } = useRidesStore();
-    console.log(Rides)
     const { ws, setWebSocket } = useWSStore();
 
     const { user } = useUser();
@@ -82,58 +80,100 @@ const HomePage = () => {
     };
 
     useEffect(() => {
-        const requestLocation = async () => {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setHasPermissions(false);
-                return;
-            }
-            setHasPermissions(true);
-            let location = await Location.getCurrentPositionAsync();
-            const address = await Location.reverseGeocodeAsync({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude
-            });
-            // console.log('address of customer ',address)
-
-            setAddress(address[0]?.formattedAddress ?? '');
-
-            // Update locations
-            // setUserLocation({
-            //     latitude: location.coords.latitude,
-            //     longitude: location.coords.longitude,
-            //     address: address[0]?.formattedAddress ?? ''
-            // });
-
-            // if (role) {
-            //     setUserRole({ role });
-            // } else {
-            //     setUserRole({ role: (user?.publicMetadata as { role?: string })?.role ?? '' });
-            // }
-
-            // if (user) {
-            //     setUserId({ customerId: user.id });
-            //     setUserFullName({ full_name: user.fullName ?? '' });
-            //     setUserProfileImageURL({ profile_image_url: user.imageUrl });
-            // }
-
-            if ((role ?? data?.role) === 'customer') {
-                setCustomerLocation({
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    address: address[0]?.formattedAddress ?? ''
-                });
-
-                if (role) setCustomerRole({ role });
-                if (user) {
-                    setCustomerId({ customerId: user.id });
-                    setCustomerFullName({ full_name: user.fullName ?? '' });
-                    setCustomerProfileImageURL({ profile_image_url: user.imageUrl });
+        try {
+            const requestLocation = async () => {
+                const { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    setHasPermissions(false);
+                    return;
                 }
-            }
-        };
-        if (user) requestLocation();
+                setHasPermissions(true);
+                let location = await Location.getCurrentPositionAsync();
+                console.log('location')
+                console.log(location)
+                const address = await Location.reverseGeocodeAsync({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                });
+                // console.log('address of customer ',address)
+
+                setAddress(address[0]?.formattedAddress ?? '');
+
+                if ((role ?? data?.role) === 'customer') {
+                    setCustomerLocation({
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
+                        address: address[0]?.formattedAddress ?? ''
+                    });
+
+                    if (role) setCustomerRole({ role });
+                    if (user) {
+                        setCustomerId({ customerId: user.id });
+                        setCustomerFullName({ full_name: user.fullName ?? '' });
+                        setCustomerProfileImageURL({ profile_image_url: user.imageUrl });
+                    }
+                }
+            };
+
+            if (user) requestLocation();
+        } catch (error) {
+            console.error("Error getting location:", error);
+        }
+
     }, [user]);
+
+
+    useEffect(() => {
+        let subscriber: Location.LocationSubscription;
+        try {
+            const startWatching = async () => {
+                const { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    setHasPermissions(false);
+                    return;
+                }
+
+                setHasPermissions(true);
+                subscriber = await Location.watchPositionAsync(
+                    { accuracy: Location.Accuracy.High, distanceInterval: 10 },
+                    (location) => {
+                        (async () => {
+                            console.log('location from watcher')
+                            console.log(location)
+                            const address = await Location.reverseGeocodeAsync({
+                                latitude: location.coords.latitude,
+                                longitude: location.coords.longitude
+                            });
+
+                            setAddress(address[0]?.formattedAddress ?? '');
+
+                            if ((role ?? data?.role) === 'customer') {
+                                setCustomerLocation({
+                                    latitude: location.coords.latitude,
+                                    longitude: location.coords.longitude,
+                                    address: address[0]?.formattedAddress ?? ''
+                                });
+
+                                if (role) setCustomerRole({ role });
+                                if (user) {
+                                    setCustomerId({ customerId: user.id });
+                                    setCustomerFullName({ full_name: user.fullName ?? '' });
+                                    setCustomerProfileImageURL({ profile_image_url: user.imageUrl });
+                                }
+                            }
+                        })
+                    }
+                );
+            };
+            startWatching();
+        } catch (error) {
+            console.error("Error getting location:", error);
+        }
+
+        return () => {
+            subscriber?.remove();
+        };
+    }, []);
 
 
     const handleSignOut = async () => {
