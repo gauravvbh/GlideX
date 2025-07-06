@@ -210,11 +210,6 @@ const Map = () => {
 
   const [markers, setMarkers] = useState(nearbyDrivers)
 
-  // const selectedDriverDetails = nearbyDrivers?.find(
-  //   (driver) => driver.id === selectedDriverId,
-  // );
-
-
   useEffect(() => {
     let socket: WebSocket;
 
@@ -493,31 +488,6 @@ const Map = () => {
   }, [userLatitude, userLongitude, destinationLatitude, destinationLongitude]);
 
 
-
-  // useEffect(()=>{
-  //   updateMarkersOnMap();
-  // },[nearbyDrivers])
-
-
-  // console.log('nearby drivers')
-  // console.log(nearbyDrivers)
-  // console.log('drivers')
-  // console.log(drivers)
-
-
-
-
-  // //to-delete
-  // useEffect(() => {
-  //   const renderMarkersFirstTime = async () => {
-  //     if (userLatitude && userLongitude && drivers) {
-  //       const markers = await getNearbyDrivers(userLatitude, userLongitude, drivers);
-  //       setNearbyDrivers(markers);
-  //     }
-  //   }
-  //   renderMarkersFirstTime()
-  // }, [drivers])
-
   const recenterMap = () => {
     const startLongitude = userLongitude ?? driverOriginLongitude;
     const startLatitude = userLatitude ?? driverOriginLatitude;
@@ -613,22 +583,12 @@ const Map = () => {
       return true;
     });
   }
+  
 
+  let toCheckLatitude = userLatitude ?? driverLatitude;
+  let toChecLongitude = userLongitude ?? driverLongitude;
 
-  // console.log('hahahaha')
-  // console.log(userLatitude)
-  // console.log(userLongitude)
-  // useEffect(() => {
-  //   if (userLongitude && userLatitude) {
-  //     setLoading(false)
-  //   }
-  //   else {
-  //     setLoading(true)
-  //   }
-  // }, [userLongitude, userLatitude])
-
-
-  if (loading && (!userLatitude || !userLongitude)) {
+  if (loading || (!toCheckLatitude || !toChecLongitude)) {
     return (
       <View className="flex justify-center items-center w-full h-full">
         <ActivityIndicator size="large" color="#ffffff" />

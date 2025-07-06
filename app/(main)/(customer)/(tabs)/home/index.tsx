@@ -1,7 +1,7 @@
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { FlatList, Image, Platform, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, FlatList, Image, Platform, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
 import { icons, images } from '@/constants/data';
 import RideCard from '@/components/RideCard';
 import { useEffect, useState } from 'react';
@@ -24,7 +24,7 @@ const API_URL = Constants.expoConfig?.extra?.serverUrl;
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
 const HomePage = () => {
-    const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL } = useCustomer();
+    const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL, userAddress, userLatitude } = useCustomer();
 
     const { setRides, Rides } = useRidesStore();
     const { ws, setWebSocket } = useWSStore();
@@ -79,101 +79,65 @@ const HomePage = () => {
         setRefreshing(false);
     };
 
-    useEffect(() => {
+
+    const requestLocation = async () => {
         try {
-            const requestLocation = async () => {
-                const { status } = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                    setHasPermissions(false);
-                    return;
-                }
-                setHasPermissions(true);
-                let location = await Location.getCurrentPositionAsync();
-                console.log('location')
-                console.log(location)
-                const address = await Location.reverseGeocodeAsync({
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Denied', 'Location permission not granted');
+                setHasPermissions(false);
+                return;
+            }
+
+            setHasPermissions(true);
+
+            const location = await Location.getCurrentPositionAsync();
+
+            const address = await Location.reverseGeocodeAsync({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            });
+
+            setAddress(address[0]?.formattedAddress ?? '');
+
+            if ((role ?? data?.role) === 'customer') {
+                setCustomerLocation({
                     latitude: location.coords.latitude,
-                    longitude: location.coords.longitude
+                    longitude: location.coords.longitude,
+                    address: address[0]?.formattedAddress ?? '',
                 });
-                // console.log('address of customer ',address)
 
-                setAddress(address[0]?.formattedAddress ?? '');
-
-                if ((role ?? data?.role) === 'customer') {
-                    setCustomerLocation({
-                        latitude: location.coords.latitude,
-                        longitude: location.coords.longitude,
-                        address: address[0]?.formattedAddress ?? ''
-                    });
-
-                    if (role) setCustomerRole({ role });
-                    if (user) {
-                        setCustomerId({ customerId: user.id });
-                        setCustomerFullName({ full_name: user.fullName ?? '' });
-                        setCustomerProfileImageURL({ profile_image_url: user.imageUrl });
-                    }
+                if (role) setCustomerRole({ role });
+                if (user) {
+                    setCustomerId({ customerId: user.id });
+                    setCustomerFullName({ full_name: user.fullName ?? '' });
+                    setCustomerProfileImageURL({ profile_image_url: user.imageUrl });
                 }
-            };
-
-            if (user) requestLocation();
+            }
         } catch (error) {
-            console.error("Error getting location:", error);
+            console.log('Error in requestLocation:', error);
         }
-
-    }, [user]);
-
+    };
 
     useEffect(() => {
-        let subscriber: Location.LocationSubscription;
-        try {
-            const startWatching = async () => {
-                const { status } = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                    setHasPermissions(false);
-                    return;
-                }
-
-                setHasPermissions(true);
-                subscriber = await Location.watchPositionAsync(
-                    { accuracy: Location.Accuracy.High, distanceInterval: 10 },
-                    (location) => {
-                        (async () => {
-                            console.log('location from watcher')
-                            console.log(location)
-                            const address = await Location.reverseGeocodeAsync({
-                                latitude: location.coords.latitude,
-                                longitude: location.coords.longitude
-                            });
-
-                            setAddress(address[0]?.formattedAddress ?? '');
-
-                            if ((role ?? data?.role) === 'customer') {
-                                setCustomerLocation({
-                                    latitude: location.coords.latitude,
-                                    longitude: location.coords.longitude,
-                                    address: address[0]?.formattedAddress ?? ''
-                                });
-
-                                if (role) setCustomerRole({ role });
-                                if (user) {
-                                    setCustomerId({ customerId: user.id });
-                                    setCustomerFullName({ full_name: user.fullName ?? '' });
-                                    setCustomerProfileImageURL({ profile_image_url: user.imageUrl });
-                                }
-                            }
-                        })
-                    }
-                );
-            };
-            startWatching();
-        } catch (error) {
-            console.error("Error getting location:", error);
+        if (user && !hasPermissions && !address) {
+            requestLocation();
         }
+    }, [user, hasPermissions, address]);
 
-        return () => {
-            subscriber?.remove();
-        };
-    }, []);
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', (state) => {
+            //state === 'active' means that the app is in foreground (not "inactive" and not "background")
+            if (state === 'active' && user && !hasPermissions) {
+                requestLocation();
+            }
+        });
+
+        return () => subscription.remove();
+    }, [user, hasPermissions]);
+
+
+
 
 
     const handleSignOut = async () => {
@@ -266,10 +230,15 @@ const HomePage = () => {
                             </TouchableOpacity>
                         </View>
 
-                        <Text className='text-xl text-primaryTextColor font-JakartaBold mt-5'>Your Current Location:</Text>
-                        {address && (
-                            <Text className='text-lg font-Jakarta text-placeholderTextColor mb-3'>{address}</Text>
-                        )}
+                        <Text className='mt-5 mb-3'>
+                            <Text className='text-xl text-primaryTextColor font-JakartaBold'>
+                                Your Current Location:
+                            </Text>{' '}
+                            <Text className='text-lg font-Jakarta text-placeholderTextColor'>
+                                {address ? address : userAddress ? userAddress : userLatitude ? userLatitude : 'Fetching..'}
+                            </Text>
+                        </Text>
+
                         <View className='w-full' style={{ height: 300, borderRadius: 16, overflow: 'hidden' }}>
                             <Map />
                         </View>

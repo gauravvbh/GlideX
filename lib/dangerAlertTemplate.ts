@@ -42,7 +42,7 @@ export const getDangerEmailHtml = (driver: PlainDriver, user: UserResource) => `
         <h2
           style="margin-top: 32px; color: #EF5350; font-weight: 600; font-size: 20px;"
         >
-          Ride Not Confirmed
+          Destination Not Confirmed
         </h2>
 
         <!-- Message -->
@@ -62,7 +62,8 @@ export const getDangerEmailHtml = (driver: PlainDriver, user: UserResource) => `
             <li style="margin-bottom: 6px;"><strong style="color: #E0E0E0;">Name:</strong> ${driver.full_name}</li>
             <li style="margin-bottom: 6px;"><strong style="color: #E0E0E0;">Phone:</strong> ${driver.number}</li>
             <li style="margin-bottom: 6px;"><strong style="color: #E0E0E0;">Email:</strong> ${driver.email}</li>
-            <li><strong style="color: #E0E0E0;">Rating:</strong> ${driver.rating}</li>
+            <li style="margin-bottom: 6px;"><strong style="color: #E0E0E0;">Rating:</strong> ${driver.rating}</li>
+            <li><strong style="color: #E0E0E0;">Driver Image:</strong></li>
           </ul>
           <img
             src="${driver.profile_image_url}"
@@ -79,7 +80,8 @@ export const getDangerEmailHtml = (driver: PlainDriver, user: UserResource) => `
         >
           <h3 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #7EB6FF;">Car Info</h3>
           <ul style="list-style: none; padding: 0; margin: 0; color: #E0E0E0;">
-            <li><strong style="color: #E0E0E0;">Seats:</strong> ${driver.car_seats}</li>
+            <li style="margin-bottom: 6px;"><strong style="color: #E0E0E0;">Seats:</strong> ${driver.car_seats}</li>
+            <li><strong style="color: #E0E0E0;">Car Image:</strong></li>
           </ul>
           <img
             src="${driver.car_image_url}"

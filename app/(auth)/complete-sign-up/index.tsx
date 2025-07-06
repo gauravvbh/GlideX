@@ -192,7 +192,7 @@ const RegisterScreen: React.FC = () => {
 
 
     return (
-        <SafeAreaView className="flex-1 px-6 pt-10 bg-neutral-900">
+        <SafeAreaView className="flex-1 px-6 pt-10 bg-bgColor">
             <View className=" mb-10">
                 <Text className="text-3xl font-JakartaBold text-white text-center">
                     Complete Your Registration

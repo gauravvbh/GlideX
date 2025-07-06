@@ -12,12 +12,6 @@ const {
 } = Constants.expoConfig?.extra || {};
 
 
-console.log('consoling from firebase.ts')
-console.log(FIREBASE_MESSAGING_SENDER_ID); 
-console.log(FIREBASE_MESSAGING_SENDER_ID);
-
-
-
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
   projectId: FIREBASE_PROJECT_ID,
@@ -26,7 +20,6 @@ const firebaseConfig = {
   appId: FIREBASE_APP_ID
 };
 
-console.log("Firebase config:", firebaseConfig);
 
 
 const app = initializeApp(firebaseConfig);

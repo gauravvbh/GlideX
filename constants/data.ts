@@ -24,7 +24,6 @@ import star from "@/assets/icons/star.png";
 import target from "@/assets/icons/target.png";
 import to from "@/assets/icons/to.png";
 import check from "@/assets/images/check.png";
-import getStarted from "@/assets/images/get-started.png";
 import message from "@/assets/images/message.png";
 import noResult from "@/assets/images/no-result.png";
 import onboarding1 from "@/assets/images/onboarding1.png";
@@ -48,7 +47,6 @@ export const images = {
     onboarding1,
     onboarding2,
     onboarding3,
-    getStarted,
     signUpCar,
     check,
     noResult,
@@ -100,14 +98,14 @@ export const onboarding = [
         id: 1,
         title: "The perfect ride is just a tap away!",
         description:
-            "Your journey begins with Ryde. Find your ideal ride effortlessly.",
+            "Your journey begins with GlideX. Find your ideal ride effortlessly.",
         image: images.onboarding1,
     },
     {
         id: 2,
-        title: "Best car in your hands with Ryde",
+        title: "Best car in your hands with GlideX",
         description:
-            "Discover the convenience of finding your perfect ride with Ryde",
+            "Discover the convenience of finding your perfect ride with GlideX",
         image: images.onboarding2,
     },
     {

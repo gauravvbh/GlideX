@@ -286,7 +286,7 @@ const SignUp = () => {
     }
 
     return (
-        <ScrollView className='flex-1'>
+        <ScrollView className='flex-1 bg-[#050706]'>
             <View className='flex-1'>
                 <View className='relative w-full h-[250px] bg-gray-100'>
                     <Image

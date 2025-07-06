@@ -36,7 +36,7 @@ const RolePage = () => {
     );
 
     return (
-        <View className="flex-1 bg-black">
+        <View className="flex-1 bg-[#0E0E0E]">
             <Image
                 source={images.icon}
                 className="h-40 mt-12 mb-10 w-full"

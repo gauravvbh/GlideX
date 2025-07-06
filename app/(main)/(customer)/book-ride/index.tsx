@@ -1,4 +1,4 @@
-import { View, FlatList } from 'react-native'
+import { View, FlatList, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import RideLayout from '@/components/RideLayout'
 import DriverCard from '@/components/DriverCard'
@@ -37,6 +37,11 @@ const BookRidePage = () => {
                 renderItem={({ item }) => (
                     <DriverCard item={item} selected={selectedDriverId ?? ''} setSelected={() => setSelectedDriverId(item.id!)} />
                 )}
+                ListEmptyComponent={
+                    <View>
+                        <Text className='text-xl ml-7 mt-5 font-JakartaMedium'>No Riders Available</Text>
+                    </View>
+                }
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 ListFooterComponent={() => (
