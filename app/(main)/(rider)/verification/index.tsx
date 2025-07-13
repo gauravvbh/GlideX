@@ -32,7 +32,7 @@ const VerificationPage = () => {
     const [profileImageLoading, setProfileImageLoading] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
 
-    const { setCarImageURL, setCarSeats: setStoreCarSeats, setProfileImageURL, setRating: setStoreRating } = useDriver();
+    const { setCarImageURL, setCarSeats: setStoreCarSeats, setProfileImageURL, setRating: setStoreRating } = useDriver.getState();
 
     const {
         setIsVerified

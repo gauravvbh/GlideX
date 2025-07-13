@@ -24,7 +24,7 @@ const ReachCustomer = () => {
     const router = useRouter();
     const { user } = useUser();
 
-    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
+    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver.getState();
 
     const { activeRideId, giveRideDetails, removeRideOffer } = useRideOfferStore(state => state);
     const { ws, setWebSocket } = useWSStore();

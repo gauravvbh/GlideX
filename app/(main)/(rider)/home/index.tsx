@@ -47,7 +47,7 @@ const RideHome = () => {
 
 
 
-    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
+    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver.getState();
 
 
     const { ws, setWebSocket } = useWSStore(state => state)
@@ -303,8 +303,7 @@ const RideHome = () => {
             try {
                 const res = await fetch(`${API_URL}/api/driver/get?clerk_id=${user?.id}`);
                 const data = await res.json();
-
-                if (data.length === 0) {
+                if (data.length === 0 || data[0].profile_image_url === "") {
                     setIsVerified(false);
                     return;
                 }

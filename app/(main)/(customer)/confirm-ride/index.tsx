@@ -18,7 +18,7 @@ const googleMapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
 
 const ConfirmRidePage = () => {
     const router = useRouter()
-    const { userAddress, destinationAddress, userLatitude, userLongitude, destinationLatitude, destinationLongitude } = useCustomer();
+    const { userAddress, destinationAddress, userLatitude, userLongitude, destinationLatitude, destinationLongitude } = useCustomer.getState();
     const { selectedDriverId, nearbyDrivers, setSelectedDriverDetails, updateDriverLocation, updateSelectedDriverLocation, selectedDriverDetails } = useDriverStore();
     const { ws, setWebSocket } = useWSStore();
     const { user } = useUser()

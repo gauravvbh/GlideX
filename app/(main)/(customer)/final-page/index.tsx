@@ -50,7 +50,7 @@ const FinalPage = () => {
     }
 
     const { user } = useUser();
-    const { userAddress, destinationAddress, userLongitude, userLatitude, destinationLatitude, destinationLongitude } = useCustomer();
+    const { userAddress, destinationAddress, userLongitude, userLatitude, destinationLatitude, destinationLongitude } = useCustomer.getState();
     const [page, setPage] = useState<string>('Loading');
     const [paid, setPaid] = useState(false);
     const { nearbyDrivers, selectedDriverId, selectedDriverDetails } = useDriverStore();

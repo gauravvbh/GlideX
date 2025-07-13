@@ -18,7 +18,7 @@ const FindRidePage = () => {
         destinationLongitude,
         setUserLocation,
         setDestinationLocation
-    } = useCustomer();
+    } = useCustomer.getState();
 
 
     const router = useRouter();

@@ -101,14 +101,14 @@ const Map = () => {
     destinationLatitude,
     destinationLongitude,
     destinationAddress,
-  } = useCustomer();
+  } = useCustomer.getState();
 
 
   const {
     userLatitude: driverLatitude,
     userLongitude: driverLongitude,
     userAddress: driverAddress,
-  } = useDriver();
+  } = useDriver.getState();
 
 
   const { user } = useUser();
@@ -583,11 +583,12 @@ const Map = () => {
       return true;
     });
   }
-  
+
 
   let toCheckLatitude = userLatitude ?? driverLatitude;
   let toChecLongitude = userLongitude ?? driverLongitude;
-
+  console.log('loading')
+  console.log(loading)
   if (loading || (!toCheckLatitude || !toChecLongitude)) {
     return (
       <View className="flex justify-center items-center w-full h-full">

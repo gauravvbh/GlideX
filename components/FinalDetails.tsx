@@ -9,7 +9,7 @@ const FinalDetails = ({ paid, setPaid, page, number }: { paid: boolean; setPaid:
     const {
         userAddress,
         destinationAddress
-    } = useCustomer();
+    } = useCustomer.getState();
 
     const { nearbyDrivers, selectedDriverId } = useDriverStore();
 

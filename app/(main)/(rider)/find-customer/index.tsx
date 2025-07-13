@@ -20,7 +20,7 @@ const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 const ReachCustomer = () => {
     const router = useRouter();
 
-    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
+    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver.getState();
 
     const { ws, setWebSocket } = useWSStore();
 
