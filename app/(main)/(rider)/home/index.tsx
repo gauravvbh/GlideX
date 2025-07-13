@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUser } from '@clerk/clerk-expo'
 import CustomButton from '@/components/CustomButton'
 import ReactNativeModal from 'react-native-modal'
-import { router } from 'expo-router'
+import { router, usePathname } from 'expo-router'
 import * as Location from 'expo-location';
 import { LocationObject } from 'expo-location';
 import { useDriver, useDriverDetails, useRideOfferStore, useUserStore, useWSStore } from '@/store'
@@ -44,7 +44,7 @@ const RideHome = () => {
     const [todayEarnings, setTodayEarnings] = useState('')
     const [refreshing, setRefreshing] = useState(false);
     const [_, forceUpdate] = useState(0);
-
+    const path = usePathname()
 
 
     const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver.getState();
@@ -346,6 +346,7 @@ const RideHome = () => {
     useEffect(() => {
         if (!isLoaded) return;
         if (loading) return;
+        if (path !== '/home') return;
 
         if (!isVerified) {
             setShowVerifyModal(true);
@@ -371,7 +372,7 @@ const RideHome = () => {
                 timerRef.current = null;
             }
         };
-    }, [isLoaded, isVerified, loading]);
+    }, [isLoaded, isVerified, loading, path]);
 
 
 
