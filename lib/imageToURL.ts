@@ -1,4 +1,5 @@
 import { storage, ref, uploadBytesResumable, getDownloadURL } from './firebase';
+import * as FileSystem from 'expo-file-system';
 
 export const uploadImageToFirebase = async (uri: string, fileName: string) => {
     const response = await fetch(uri);

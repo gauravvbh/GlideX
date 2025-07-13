@@ -11,6 +11,11 @@ const {
   FIREBASE_APP_ID
 } = Constants.expoConfig?.extra || {};
 
+if (!FIREBASE_API_KEY || !FIREBASE_PROJECT_ID || !FIREBASE_STORAGE_BUCKET || !FIREBASE_MESSAGING_SENDER_ID || !FIREBASE_APP_ID) {
+  throw new Error('Missing Firebase configuration. Check your environment variables.');
+}
+
+
 
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,

@@ -6,7 +6,7 @@ import { useClerk } from '@clerk/clerk-expo'
 import { router } from 'expo-router'
 import { useDriverDetails } from '@/store'
 
-const RiderHeader = ({ hasPermissions, todayEarnings }: { hasPermissions: boolean, todayEarnings:string }) => {
+const RiderHeader = ({ hasPermissions, todayEarnings }: { hasPermissions: boolean, todayEarnings: string }) => {
 
     const { signOut } = useClerk();
 
@@ -36,7 +36,7 @@ const RiderHeader = ({ hasPermissions, todayEarnings }: { hasPermissions: boolea
                     onPress={handleSignOut}
                 />
                 <TouchableOpacity
-                    className='py-0 px-4 border border-gray-500 rounded-full flex-row items-center gap-1.5'
+                    className={`py-0 px-4 border border-gray-500 rounded-full flex-row items-center gap-1.5 ${!isVerified && 'opacity-60'}`}
                     disabled={!isVerified}
                     onPress={() => {
                         setOnDuty(!onDuty)

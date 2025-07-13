@@ -51,6 +51,7 @@ const RegisterScreen: React.FC = () => {
 
     const generateOtp = () => {
         const randomOtp = Math.floor(1000 + Math.random() * 9000);
+        console.log(randomOtp.toString())
         return randomOtp.toString();
     };
 

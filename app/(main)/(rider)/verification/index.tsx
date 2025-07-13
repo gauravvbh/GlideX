@@ -87,8 +87,9 @@ const VerificationPage = () => {
                 try {
                     const imageUrl = await uploadImageToFirebase(uri, fileName);
                     setProfileImage(imageUrl);
-                } catch (error) {
+                } catch (error: any) {
                     console.error("Error uploading image to Firebase:", error);
+                    Alert.alert('Profile Image Upload Faileddd', error.message)
                 }
             }
         } catch (error: any) {
