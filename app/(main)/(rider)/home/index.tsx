@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, ActivityIndicator, Platform } from 'react-native'
+import { View, Text, FlatList, Image, ActivityIndicator, Platform, Alert } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import RiderHeader from '@/components/RiderHeader'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -19,7 +19,6 @@ import { RefreshControl } from 'react-native'
 
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
-
 
 let LottieView: any = () => null;
 
@@ -305,14 +304,12 @@ const RideHome = () => {
                 const res = await fetch(`${API_URL}/api/driver/get?clerk_id=${user?.id}`);
                 const data = await res.json();
 
-                const isDataPresent = !!data[0].car_image_url;
-                // console.log(isDataPresent)
-                if (data.length === 0 || !data[0].car_image_url) {
+                if (data.length === 0) {
                     setIsVerified(false);
                     return;
                 }
                 setIsVerified(true);
-            } catch (error) {
+            } catch (error: any) {
                 console.log('API fetch error:', error);
             } finally {
                 setLoading(false)
@@ -323,7 +320,6 @@ const RideHome = () => {
             getDriverData();
         }
     }, [user]);
-
 
     useEffect(() => {
         setLoading(true)

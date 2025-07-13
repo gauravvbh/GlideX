@@ -52,7 +52,6 @@ const SignIn = () => {
                         body: JSON.stringify({
                             clerk_id: data?.clerk_id,
                             role: data.role,
-                            email: data.email,
                             number: data.number
                         })
                     });

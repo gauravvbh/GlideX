@@ -11,7 +11,6 @@ import { useUserStore } from '@/store'
 import Constants from 'expo-constants';
 
 const API_URL = Constants.expoConfig?.extra?.serverUrl;
-console.log(API_URL)
 
 const SignUp = () => {
     const { role } = useUserStore();
@@ -92,6 +91,19 @@ const SignUp = () => {
 
                 console.log('id')
                 console.log(signUpAttempt.createdUserId)
+
+                await fetch(`${API_URL}/api/clerk-role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        clerk_id: signUpAttempt.createdUserId,
+                        role: role,
+                        number: form.phone
+                    })
+                });
+
                 const result = await fetch(`${API_URL}/api/register`, {
                     method: 'POST',
                     headers: {

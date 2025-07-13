@@ -116,13 +116,25 @@ const RegisterScreen: React.FC = () => {
         }
 
         setLoading(true)
-        //clerk-role
+
 
         try {
             const safeRole = role === 'Customer' ? 'customer' : 'rider';
             const fullName = `${user?.firstName} ${user?.lastName}`
 
-            const result = await fetch(`${API_URL}/api/register`, {
+            await fetch(`${API_URL}/api/clerk-role`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    clerk_id: user?.id,
+                    role: safeRole,
+                    number: number
+                })
+            });
+
+            await fetch(`${API_URL}/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -162,7 +174,7 @@ const RegisterScreen: React.FC = () => {
             })
         }).catch(err => console.log("❌ Email send error", err));
     }
-
+    console.log(role)
     const handleBrowseHome = () => {
         if (role === 'Customer') {
             router.replace('/(main)/(customer)/(tabs)/home')
@@ -187,7 +199,12 @@ const RegisterScreen: React.FC = () => {
 
 
     if (user && Object.keys(user.publicMetadata).length !== 0) {
-        return <Redirect href={`/(main)/${user?.publicMetadata.role === 'customer' ? '(customer)' : '(rider)'}/(tabs)/home`} />
+        if (user?.publicMetadata.role === 'customer') {
+            return <Redirect href={'/(main)/(customer)/(tabs)/home'} />
+        }
+        if (user?.publicMetadata.role === 'rider') {
+            return <Redirect href={'/(main)/(rider)/home'} />
+        }
     }
 
 

@@ -1,13 +1,10 @@
 import { db } from "@/src/db";
 import { drivers, users as userTable } from "@/src/db/schema";
-import { eq } from "drizzle-orm";
-import { clerkClient } from "@clerk/express";
-
+import { sql } from "drizzle-orm"; // Note: we are using sql from drizzle for raw queries
 export async function POST(request: Request) {
     try {
         const { name, email, phone, role, clerk_id } = await request.json();
-
-        if (!name || !email || !clerk_id || !role) {
+        if (!name || !phone || !email || !clerk_id || !role) {
             return new Response(
                 JSON.stringify({
                     step: "Validation Failed",
@@ -17,104 +14,75 @@ export async function POST(request: Request) {
                 { status: 400 }
             );
         }
-
-        // STEP 1: Update Clerk metadata and fetch updated user in one call if possible
-        let updatedUser;
         try {
-            updatedUser = await clerkClient.users.updateUser(clerk_id, {
-                publicMetadata: {
-                    role,
-                    phone_number: phone,
-                },
+            // Insert user with ORM (if this causes too many subrequests, we might have to change it too, but let's see)
+            await db.insert(userTable).values({
+                name,
+                email,
+                number: phone,
+                role,
+                clerk_id,
+                profile_image_url: "",
             });
-            // If updateUser does NOT return the updated user object,
-            // you might still need clerkClient.users.getUser(clerk_id) here.
-            // Check Clerk documentation for exact return value of updateUser.
-        } catch (clerkUpdateError: any) {
-            return new Response(
-                JSON.stringify({
-                    step: "Clerk Update Failed",
-                    error: clerkUpdateError.message || clerkUpdateError,
-                }),
-                { status: 500 }
-            );
-        }
-
-        // STEP 2: Insert or Update user in DB (UPSERT)
-        let insertedOrUpdatedUser; // Renamed variable for clarity
-        try {
-            insertedOrUpdatedUser = await db
-                .insert(userTable)
-                .values({
-                    name,
-                    email,
-                    number: phone,
-                    role,
-                    clerk_id,
-                    profile_image_url: "",
-                })
-                .onConflictDoUpdate({
-                    target: userTable.email, // Assuming email is unique. If clerk_id is primary, use that.
-                    set: {
-                        name: name,
-                        number: phone,
-                        role: role, // Update role if it changes via registration
-                        // profile_image_url: "" // Update if needed
-                    },
-                })
-                .returning();
-
-            // Check if the user was actually found/created
-            if (!insertedOrUpdatedUser || insertedOrUpdatedUser.length === 0) {
-                throw new Error("DB Upsert did not return a user.");
-            }
-
-        } catch (dbUserOpError: any) { // Catch both insert and update errors here
-            return new Response(
-                JSON.stringify({
-                    step: "DB User Upsert Failed",
-                    error: dbUserOpError.message || dbUserOpError,
-                }),
-                { status: 500 }
-            );
-        }
-
-        // STEP 3: If rider, insert into drivers table (still a separate call, but conditional)
-        if (role === "rider") {
-            try {
-                // Before inserting, check if driver record already exists to avoid conflict
-                const existingDriver = await db
-                    .select()
-                    .from(drivers)
-                    .where(eq(drivers.user_id, clerk_id));
-
-                if (existingDriver.length === 0) {
-                    await db.insert(drivers).values({
-                        user_id: clerk_id,
-                        car_image_url: "",
-                        car_seats: 0,
-                        rating: 0,
-                    });
-                }
-                // If existingDriver.length > 0, the driver record already exists,
-                // so we don't need to insert again. No need for a "Driver Already Exists" error.
-            } catch (insertDriverError: any) {
+        } catch (dbUserOpError: any) {
+            if (dbUserOpError.message.includes('unique constraint') || dbUserOpError.message.includes('duplicate key')) {
+                // User already exists, which might be acceptable? But in our flow, it should be a new registration.
+                // We return an error response for duplicate user.
                 return new Response(
                     JSON.stringify({
-                        step: "DB Insert Driver Failed",
-                        error: insertDriverError.message || insertDriverError,
+                        step: "User already exists",
+                        error: dbUserOpError.message || dbUserOpError,
+                    }),
+                    { status: 400 }
+                );
+            } else {
+                return new Response(
+                    JSON.stringify({
+                        step: "DB User Insert Failed",
+                        error: dbUserOpError.message || dbUserOpError,
                     }),
                     { status: 500 }
                 );
             }
         }
-
-        // ✅ SUCCESS
+        // If the role is rider, insert into drivers table
+        if (role === "rider") {
+            try {
+                // Using raw SQL to avoid ORM generating multiple subrequests
+                // await db.execute(sql`
+                //     INSERT INTO drivers (user_id, car_image_url, car_seats, rating)
+                //     VALUES (${clerk_id}, '', 0, 0)
+                //     ON CONFLICT (user_id) DO NOTHING
+                // `);
+                await db
+                    .insert(drivers)
+                    .values({
+                        user_id: clerk_id,
+                        car_image_url: '',
+                        car_seats: 0,
+                        rating: 0,
+                    })
+                    .onConflictDoNothing({
+                        target: [drivers.user_id],
+                    });
+            } catch (driverError: any) {
+                // If it's a unique constraint, we ignore because it's already there.
+                if (driverError.message.includes('unique constraint') || driverError.message.includes('duplicate key')) {
+                    // Do nothing, it's okay.
+                } else {
+                    return new Response(
+                        JSON.stringify({
+                            step: "DB Driver Insert Failed",
+                            error: driverError.message || driverError,
+                        }),
+                        { status: 500 }
+                    );
+                }
+            }
+        }
         return new Response(
             JSON.stringify({
-                step: "User Registered/Updated Successfully", // Adjusted message
-                result: insertedOrUpdatedUser[0], // Return the first (and only) row
-                clerk_metadata: updatedUser.publicMetadata,
+                step: "User Registered Successfully"
             }),
             { status: 200 }
         );
@@ -123,7 +91,6 @@ export async function POST(request: Request) {
             JSON.stringify({
                 step: "Unhandled Error",
                 error: error?.message || error,
-                stack: error?.stack || null,
             }),
             { status: 500 }
         );

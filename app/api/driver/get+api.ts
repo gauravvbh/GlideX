@@ -30,7 +30,6 @@ export async function GET(request: Request) {
             .where(eq(users.clerk_id, clerkId))
             .innerJoin(drivers, eq(users.clerk_id, drivers.user_id))
 
-        console.log(data)
         return Response.json(data, { status: 200 })
     } catch (error) {
         console.log(error)
