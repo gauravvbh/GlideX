@@ -1,102 +1,72 @@
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-
-
-
-
-
-<!-- made by me -->
-
-
-
-
 # 🚖 GlideX
 
-A feature-rich, production-ready Ride-Hailing Platform built using React Native (Expo), PostgreSQL (via Drizzle ORM), Neon Serverless, Clerk Authentication, Stripe Payments, Firebase Cloud Storage, and WebSocket-based live tracking.
+<p align="center">
+  <img src="https://firebasestorage.googleapis.com/v0/b/glidex-83723.appspot.com/o/app_assets%2Ficon.png?alt=media&token=dc64c455-792e-4562-8f5b-b87566240b8c" alt="GlideX Logo" width="150" />
+</p>
 
-GlideX allows customers to book rides, track drivers in real-time, make payments securely, and enables drivers to manage their availability and accept ride offers.
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-green" />
+  <img src="https://img.shields.io/badge/platform-Android%20%7C%20iOS-blue" />
+  <img src="https://img.shields.io/badge/Expo-SDK%2053-000" />
+  <img src="https://img.shields.io/badge/EAS-Build-blueviolet" />
+  <img src="https://img.shields.io/badge/ORM-Drizzle-yellow" />
+  <img src="https://img.shields.io/badge/Auth-Clerk-orange" />
+</p>
+
+<p align="center">
+  A feature-rich, production-ready Ride-Hailing Platform built using React Native (Expo), PostgreSQL (via Drizzle ORM), Neon Serverless, Clerk Authentication, Stripe Payments, Firebase Cloud Storage, WebSocket-based live tracking, and a dedicated Node.js utility backend.
+</p>
+
+<p align="center">
+  GlideX allows customers to book rides, track drivers in real-time, make payments securely, and enables drivers to manage their availability and accept ride offers.
+</p>
+
+
+---
 
 ## 📋 Table of Contents
 
-- Features
-- Tech Stack
-- Environment Variables
-- Setup & Installation
-- Database Schema
-- State Management
-- UI Screenshots
-- API & Integrations
-- Scripts
-- Contributing
-- License
+- [✨ Features](#-features)
+- [🧰 Tech Stack](#-tech-stack)
+- [🔑 Environment Variables](#-environment-variables)
+- [🚀 Setup & Installation](#-setup--installation)
+- [🗃️ Database Schema](#️-database-schema)
+- [🗂️ State Management](#️-state-management)
+- [🔧 Utility Backend Server](#️-utility-backend-server)
+- [🎨 UI Screenshots](#-ui-screenshots)
+- [🌐 API & Integrations](#-api--integrations)
+- [🧪 Testing](#-testing)
+- [📈 Performance & Scalability](#-performance--scalability)
+- [🛠️ Deployment](#️-deployment)
+- [📜 Scripts](#-scripts)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+
+---
 
 ## ✨ Features
 
-✅ User Authentication & Role Management via Clerk  
-✅ Real-time Driver Tracking via WebSocket  
-✅ Google Maps integration for locations & routing  
-✅ Ride Offer System: Drivers receive & respond to customer ride requests  
-✅ Secure Payments via Stripe  
-✅ Profile and Car Details Management for Drivers  
-✅ Push Notifications via Expo Notifications  
-✅ Ratings system for drivers  
-✅ Fully Responsive, Themeable UI built with TailwindCSS + NativeWind  
-✅ Serverless-friendly, scales with Neon & Clerk  
+- Clerk-based User Authentication & Role Management  
+- Real-time Driver-Customer Tracking via WebSocket  
+- Google Maps Integration for Geolocation & Routing
+- Ride Offer System: Drivers receive & respond to customer ride requests via WebSocket
+- Secure Mobile Payments via Stripe
+- Email Notifications for Transactions & Updates via Nodemailer  
+- Driver Profile & Car Details Management 
+- Push Notifications via Expo Notifications  
+- Ratings system for drivers  
+- Fully Responsive, Themeable UI built with TailwindCSS + NativeWind  
+- Serverless-friendly, scales with Neon & Clerk
+- Animations with LottieFiles  
+
+---
 
 ## 🧰 Tech Stack
 
 | Category               | Technology                    |
-|-------------------------|-------------------------------|
-| **Frontend**           | React Native (Expo SDK 53)   |
-| **UI Styling**         | TailwindCSS with NativeWind  |
+|------------------------|-------------------------------|
+| **Frontend**           | React Native (Expo SDK 53)    |
+| **UI Styling**         | TailwindCSS with NativeWind   |
 | **State Management**   | Zustand                       |
 | **Authentication**     | Clerk                         |
 | **Database**           | PostgreSQL (via Neon)         |
@@ -106,53 +76,64 @@ GlideX allows customers to book rides, track drivers in real-time, make payments
 | **Storage**            | Firebase                      |
 | **Notifications**      | Expo Notifications            |
 | **Real-time Updates**  | WebSockets                    |
-| **Backend API**        | Serverless                    |
+| **Utility Backend**    | Node.js (Express, Nodemailer) |
+| **Animations**         | LottieFiles                   |
+
+---
 
 ## 🔑 Environment Variables
-Define the following in .env.local (already configured for Expo and Drizzle):
+**App**
 
 ```env
-EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-EXPO_PUBLIC_SERVER_URL=
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+CLERK_SECRET_KEY
+EXPO_PUBLIC_SERVER_URL
 EXPO_PUBLIC_WEB_SOCKET_SERVER_URL=
-DATABASE_URL=
-EXPO_PUBLIC_GOOGLE_API_KEY=
-EXPO_PUBLIC_STRIPE_API_KEY=
-STRIPE_SECRET_KEY=
-FIREBASE_API_KEY=
-FIREBASE_PROJECT_ID=
-FIREBASE_STORAGE_BUCKET=
-FIREBASE_MESSAGING_SENDER_ID=
-FIREBASE_APP_ID=
+DATABASE_URL
+EXPO_PUBLIC_GOOGLE_API_KEY
+EXPO_PUBLIC_STRIPE_API_KEY
+STRIPE_SECRET_KEY
+FIREBASE_API_KEY
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+FIREBASE_MESSAGING_SENDER_ID
+FIREBASE_APP_ID
+```
+**Utility Backend Server**
+
+```env
+PORT
+STRIPE_SECRET_KEY
+GMAIL_USER
+GMAIL_PASS
 ```
 
 ## 🚀 Setup & Installation
 
-### 1️⃣ Install dependencies
+###  Install dependencies
 
 ```bash
 npm install
 ```
-### 2️⃣ Setup environment
+###  Setup environment
 
-Create a `.env.local` file and fill in all required keys (see See [Environment Variables](#environment-variables) for details. section).
+Create .env.local and .env files with the keys mentioned in [Environment Variables](#environment-variables).
 
-### 3️⃣ Run database migrations
+###  Run database migrations
 
 ```bash
 npx drizzle-kit generate:pg
 npx drizzle-kit push:pg
 ```
 
-### 4️⃣ Start the development server
+###  Start the development server
 
 ```bash
 npx expo start
 ```
-### 5️⃣ Setup Clerk Webhooks (optional but recommended)
+###  Optional: Setup Clerk Webhooks
 
-See Clerk docs on enabling webhooks for syncing user data.
+For syncing user data and events. See [Clerk Webhooks](https://clerk.com/docs/webhooks/overview).
 
 
 ## 🗃️ Database Schema
@@ -189,6 +170,29 @@ All stores are defined under `src/store`.
 
 ---
 
+## 🔧 Utility Backend Server
+
+GlideX includes a lightweight **Express-based server** for handling tasks that require sensitive server-side credentials and cannot be run on the client.
+
+### 📦 Features 
+
+- Stripe Payment Intent Creation  
+- Ephemeral Keys for Stripe Mobile SDK  
+- Email Sending via Nodemailer + Gmail SMTP  
+- CORS & JSON support  
+
+### 🚀 Run the server
+
+```bash
+cd utils-server
+npm install
+npm start
+```
+
+Accessible at:  [http://localhost:3000](http://localhost:3000).
+
+---
+
 ## 🎨 UI Screenshots
 
 Here are some screens showcasing the GlideX user experience for both customers and drivers.
@@ -215,10 +219,61 @@ Here are some screens showcasing the GlideX user experience for both customers a
 | **Neon**            | Serverless PostgreSQL          |
 | **Drizzle**         | Database ORM and migrations    |
 | **Stripe**          | Payment processing             |
-| **Google Maps**     | Geolocation, Routing           |
+| **Google Maps**     | Geolocation, Routing, AutoComplete|
 | **Firebase**        | Media Storage                  |
 | **Expo Notifications** | Push Notifications         |
 | **WebSocket**       | Real-time location updates     |
+| **Nodemailer**       | Email notifications    |
+
+---
+
+## 🧪 Testing
+
+- Unit tests for business logic (**Coming Soon**)  
+
+- End-to-end flow tested on Android & iOS Simulators 
+
+- Manual QA for real-time updates, payments, and notifications
+
+- Tested on Expo Go and EAS production builds
+- Basic load testing and error handling verified
+
+---
+
+## 📈 Performance & Scalability
+
+- Stateless, serverless-friendly architecture
+
+- Real-time updates using WebSockets
+
+- Optimistic UI updates for better UX
+
+- Secure OAuth & HTTPS-ready
+
+- Horizontally scalable backend
+---
+
+## 🛠️ Deployment
+
+Built & deployed via **Expo Application Services (EAS)**.
+
+### 📦 Build
+
+Build for Android or iOS using your preferred EAS build profile (`production`, `development`, etc.):
+
+```bash
+eas build --platform android --profile production
+eas build --platform ios --profile production
+```
+
+For the web export:
+
+```bash
+npx expo export --platform web
+eas deploy --prod
+```
+
+See [EAS Build Docs](https://docs.expo.dev/build/introduction/) and [EAS Submit Docs](https://docs.expo.dev/submit/introduction/).
 
 ---
 
@@ -226,23 +281,24 @@ Here are some screens showcasing the GlideX user experience for both customers a
 
 | Command                          | Description              |
 |----------------------------------|--------------------------|
-| `npx expo start`                | Run development server   |
+| `npx expo start`                | Start development server   |
 | `npx drizzle-kit generate:pg`  | Generate migrations      |
 | `npx drizzle-kit push:pg`      | Run migrations           |
-| `npx expo build:android`       | Build Android app        |
-| `npx expo build:ios`           | Build iOS app            |
+| `npm start`                     | Start utility backend    |
+| `eas build`           | Build production app            |
 
 ---
 
 ## 🤝 Contributing
+Contributions are welcome!
 
-- Fork the repo
-- Create a new branch
-- Make your changes
+- Fork the repository
+- Create a feature branch
+- Commit your changes
 - Open a Pull Request
 
 ---
 
 ## 📄 License
 
-MIT License — feel free to use & modify.
+MIT License — feel free to use, modify, and distribute.
