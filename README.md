@@ -1,25 +1,20 @@
-# 🚖 GlideX
-
 <p align="center">
-  <img src="https://firebasestorage.googleapis.com/v0/b/glidex-83723.appspot.com/o/app_assets%2Ficon.png?alt=media&token=dc64c455-792e-4562-8f5b-b87566240b8c" alt="GlideX Logo" width="150" />
+  <img src="https://firebasestorage.googleapis.com/v0/b/glidex-83723.firebasestorage.app/o/app_assets%2Ficon.png?alt=media&token=dc64c455-792e-4562-8f5b-b87566240b8c" alt="GlideX Logo" width="150" />
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/license-MIT-green" />
-  <img src="https://img.shields.io/badge/platform-Android%20%7C%20iOS-blue" />
-  <img src="https://img.shields.io/badge/Expo-SDK%2053-000" />
-  <img src="https://img.shields.io/badge/EAS-Build-blueviolet" />
-  <img src="https://img.shields.io/badge/ORM-Drizzle-yellow" />
-  <img src="https://img.shields.io/badge/Auth-Clerk-orange" />
-</p>
+<h1 align="center">GlideX</h1>
 
 <p align="center">
-  A feature-rich, production-ready Ride-Hailing Platform built using React Native (Expo), PostgreSQL (via Drizzle ORM), Neon Serverless, Clerk Authentication, Stripe Payments, Firebase Cloud Storage, WebSocket-based live tracking, and a dedicated Node.js utility backend.
+  <a href="#"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/platform-Android%20%7C%20iOS-blue" alt="Platform"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Expo-SDK%2053-000" alt="Expo SDK"></a>
+  <a href="#"><img src="https://img.shields.io/badge/EAS-Build-blueviolet" alt="EAS Build"></a>
+  <a href="#"><img src="https://img.shields.io/badge/ORM-Drizzle-yellow" alt="Drizzle ORM"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Auth-Clerk-orange" alt="Clerk Auth"></a>
 </p>
 
-<p align="center">
-  GlideX allows customers to book rides, track drivers in real-time, make payments securely, and enables drivers to manage their availability and accept ride offers.
-</p>
+
+<p align="center"> <strong>GlideX</strong> is a feature-rich, production-ready ride-hailing platform designed to deliver a seamless and intuitive experience for both customers and drivers. Customers can book rides, track drivers live on interactive maps, pay securely via Stripe, and rate their journey — all in real-time. Drivers can manage their availability, receive and respond to ride offers through WebSocket-powered updates, and maintain their profiles and vehicle details. With push notifications, email alerts, and an engaging, animated UI, GlideX ensures users stay informed and engaged throughout the ride process. </p> <p align="center"> Built with a modern, serverless-friendly architecture, GlideX leverages React Native (Expo), PostgreSQL with Drizzle ORM, Neon serverless hosting, Clerk authentication, Firebase cloud storage, and a secure Node.js utility backend for sensitive operations. The platform is fully responsive, themeable, horizontally scalable, and tested for performance on Android and iOS, offering a polished and reliable experience backed by cutting-edge technology. </p>
 
 
 ---
@@ -32,7 +27,7 @@
 - [🚀 Setup & Installation](#-setup--installation)
 - [🗃️ Database Schema](#️-database-schema)
 - [🗂️ State Management](#️-state-management)
-- [🔧 Utility Backend Server](#️-utility-backend-server)
+- [🔧 Utility Backend Server](#-utility-backend-server)
 - [🎨 UI Screenshots](#-ui-screenshots)
 - [🌐 API & Integrations](#-api--integrations)
 - [🧪 Testing](#-testing)
@@ -54,7 +49,7 @@
 - Email Notifications for Transactions & Updates via Nodemailer  
 - Driver Profile & Car Details Management 
 - Push Notifications via Expo Notifications  
-- Ratings system for drivers  
+- Rating system for drivers  
 - Fully Responsive, Themeable UI built with TailwindCSS + NativeWind  
 - Serverless-friendly, scales with Neon & Clerk
 - Animations with LottieFiles  
@@ -88,7 +83,7 @@
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 CLERK_SECRET_KEY
 EXPO_PUBLIC_SERVER_URL
-EXPO_PUBLIC_WEB_SOCKET_SERVER_URL=
+EXPO_PUBLIC_WEB_SOCKET_SERVER_URL
 DATABASE_URL
 EXPO_PUBLIC_GOOGLE_API_KEY
 EXPO_PUBLIC_STRIPE_API_KEY
