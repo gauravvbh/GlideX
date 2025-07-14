@@ -34,6 +34,7 @@
 - [📈 Performance & Scalability](#-performance--scalability)
 - [🛠️ Deployment](#️-deployment)
 - [📜 Scripts](#-scripts)
+- [🌟 Future Roadmap](#-future-roadmap)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
@@ -280,6 +281,12 @@ See [EAS Build Docs](https://docs.expo.dev/build/introduction/) and [EAS Submit 
 | `npm start`                     | Start utility backend    |
 | `eas build`           | Build production app            |
 
+---
+## 🌟 Future Roadmap
+- Admin dashboard
+- Promo codes & discounts
+- In-app chat
+- Multi-language support
 ---
 
 ## 🤝 Contributing
