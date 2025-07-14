@@ -24,7 +24,7 @@ const ReachCustomer = () => {
     const router = useRouter();
     const { user } = useUser();
 
-    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver.getState();
+    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
 
     const { activeRideId, giveRideDetails, removeRideOffer } = useRideOfferStore(state => state);
     const { ws, setWebSocket } = useWSStore();
@@ -248,7 +248,7 @@ const ReachCustomer = () => {
 
 
     return (
-        <RideLayout disabled={true} title="">
+        <RideLayout disabled={true} title="" snapPoints={['40%', '50%']}>
             <View className="justify-between bg-white">
                 {/* Top: Ride Info */}
                 <View>

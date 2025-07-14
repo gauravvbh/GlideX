@@ -101,14 +101,14 @@ const Map = () => {
     destinationLatitude,
     destinationLongitude,
     destinationAddress,
-  } = useCustomer.getState();
+  } = useCustomer();
 
 
   const {
     userLatitude: driverLatitude,
     userLongitude: driverLongitude,
     userAddress: driverAddress,
-  } = useDriver.getState();
+  } = useDriver();
 
 
   const { user } = useUser();
@@ -586,14 +586,16 @@ const Map = () => {
 
 
   let toCheckLatitude = userLatitude ?? driverLatitude;
-  let toChecLongitude = userLongitude ?? driverLongitude;
+  let toCheckLongitude = userLongitude ?? driverLongitude;
   console.log('loading')
-  console.log(loading)
-  if (loading || (!toCheckLatitude || !toChecLongitude)) {
+  console.log(toCheckLatitude)
+  console.log(toCheckLongitude)
+  if (loading || (toCheckLatitude == null || toCheckLongitude == null)) {
     return (
       <View className="flex justify-center items-center w-full h-full">
         <ActivityIndicator size="large" color="#ffffff" />
         <Text className='text-white mt-4'>Waiting for the location...</Text>
+        <Text className='text-red-900 mt-4 text-center'>If you have been waiting for a long time, please close and reopen the app.</Text>
       </View>
     );
   }

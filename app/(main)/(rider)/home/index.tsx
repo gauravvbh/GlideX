@@ -47,7 +47,7 @@ const RideHome = () => {
     const path = usePathname()
 
 
-    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver.getState();
+    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
 
 
     const { ws, setWebSocket } = useWSStore(state => state)

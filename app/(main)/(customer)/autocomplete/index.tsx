@@ -27,7 +27,7 @@ const AutocompletePage = () => {
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [loading, setLoading] = useState(false);
-    const { userLatitude, userLongitude, setDestinationLocation } = useCustomer.getState();
+    const { userLatitude, userLongitude, setDestinationLocation } = useCustomer();
 
     const handleDestinationPress = (location: {
         latitude: number;

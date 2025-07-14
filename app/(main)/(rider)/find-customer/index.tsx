@@ -20,7 +20,7 @@ const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 const ReachCustomer = () => {
     const router = useRouter();
 
-    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver.getState();
+    const { userAddress, setUserLocation: setDriverLocation, setId: setDriverId, setRole: setDriverRole, setFullName: setDriverFullName } = useDriver();
 
     const { ws, setWebSocket } = useWSStore();
 
@@ -190,7 +190,7 @@ const ReachCustomer = () => {
 
 
     return (
-        <RideLayout disabled={true} title="">
+        <RideLayout disabled={true} title="" snapPoints={['40%', '50%']}>
             <View className="justify-between bg-white">
                 {/* Heading */}
                 <View>

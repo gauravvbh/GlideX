@@ -24,7 +24,7 @@ const API_URL = Constants.expoConfig?.extra?.serverUrl;
 const WEBSOCKET_API_URL = Constants.expoConfig?.extra?.webSocketServerUrl;
 
 const HomePage = () => {
-    const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL, userAddress, userLatitude } = useCustomer.getState();
+    const { setUserLocation: setCustomerLocation, setId: setCustomerId, setRole: setCustomerRole, setFullName: setCustomerFullName, setProfileImageURL: setCustomerProfileImageURL, userAddress, userLatitude } = useCustomer();
 
     const { setRides, Rides } = useRidesStore();
     const { ws, setWebSocket } = useWSStore();

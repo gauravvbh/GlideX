@@ -36,7 +36,7 @@ const GoogleTextInput = ({
     const [loading, setLoading] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    const { userLatitude, userLongitude } = useCustomer.getState();
+    const { userLatitude, userLongitude } = useCustomer();
 
     useEffect(() => {
         if (query.length < 3) {

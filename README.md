@@ -112,7 +112,7 @@ npm install
 ```
 ###  Setup environment
 
-Create .env.local and .env files with the keys mentioned in [Environment Variables](#environment-variables).
+Create .env.local and .env files with the keys mentioned in [Environment Variables](#-environment-variables).
 
 ###  Run database migrations
 
@@ -188,20 +188,18 @@ Accessible at:  [http://localhost:3000](http://localhost:3000).
 
 ---
 
+
 ## 🎨 UI Screenshots
 
 Here are some screens showcasing the GlideX user experience for both customers and drivers.
 
-### 📱 Customer Home
-![Customer Home](https://your-screenshot-link-here.com/customer-home.png)
+| 📱 Customer Home | 🚘 Driver Dashboard |
+|------------------|---------------------|
+| <img src="https://firebasestorage.googleapis.com/v0/b/glidex-83723.firebasestorage.app/o/app_assets%2FScreenshot_20250714-181147.png?alt=media&token=055057c0-15dd-4ea8-a6ca-962565d72d2e" alt="Customer Home" width="250"> | <img src="https://firebasestorage.googleapis.com/v0/b/glidex-83723.firebasestorage.app/o/app_assets%2FScreenshot_20250714-181504.png?alt=media&token=77134acd-a6a9-4e70-a9aa-276eebc7778a" alt="Driver Dashboard" width="250"> |
 
-### 🚘 Driver Dashboard
-![Driver Dashboard](https://your-screenshot-link-here.com/driver-dashboard.png)
-
-### 📍 Live Ride Tracking
-![Live Ride Tracking](https://your-screenshot-link-here.com/live-ride-tracking.png)
-
-*(Replace the above links with actual hosted screenshots of your app.)*
+| 📍 Live Ride Tracking | 📍 Ride Completion |
+|-----------------------|--------------------|
+| <img src="https://firebasestorage.googleapis.com/v0/b/glidex-83723.firebasestorage.app/o/app_assets%2FScreenshot_20250714-180647.png?alt=media&token=3577d2f7-3e0f-48d7-a560-e30d916e5472" alt="Live Ride Tracking" width="250"> | <img src="https://firebasestorage.googleapis.com/v0/b/glidex-83723.firebasestorage.app/o/app_assets%2FScreenshot_20250714-181400.png?alt=media&token=0e377859-65ce-4316-bc6a-38d2b0c32264" alt="Ride Completion" width="250"> |
 
 
 ---
